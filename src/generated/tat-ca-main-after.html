@@ -1,0 +1,60 @@
+<div class="sortpagibar pagi clearfix text-center">
+								<div id="pagination" class="clearfix">
+	
+
+</div>
+							</div>
+						</div>
+							
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<input type="text" class="hidden" id="coll-handle" value="(collectionid:product&gt;0)">
+</div>
+<script>
+Haravan.queryParams = {};
+if (location.search.length) {
+	for (var aKeyValue, i = 0, aCouples = location.search.substr(1).split('&'); i < aCouples.length; i++) {
+		aKeyValue = aCouples[i].split('=');
+		if (aKeyValue.length > 1) {
+			Haravan.queryParams[decodeURIComponent(aKeyValue[0])] = decodeURIComponent(aKeyValue[1]);
+		}
+	}
+}
+var collFilters = jQuery('.coll-filter');
+collFilters.change(function() {
+	var newTags = [];
+	var newURL = '';
+	delete Haravan.queryParams.page;
+	collFilters.each(function() { 
+		if (jQuery(this).val()) {
+			newTags.push(jQuery(this).val());
+		}
+	});
+	
+	newURL = '/collections/' + 'all';
+	 if (newTags.length) {
+		 newURL += '/' + newTags.join('+');
+	 }
+	 var search = jQuery.param(Haravan.queryParams);
+	 if (search.length) {
+		 newURL += '?' + search;
+	 }
+	 location.href = newURL;    
+	       
+		});
+		jQuery('.sort-by')
+		.val('created-descending')
+		.bind('change', function() {
+			Haravan.queryParams.sort_by = jQuery(this).val();
+			location.search = jQuery.param(Haravan.queryParams);
+		});
+		</script>
+
+
+
+
+			

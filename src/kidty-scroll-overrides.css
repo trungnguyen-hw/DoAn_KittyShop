@@ -1,0 +1,16 @@
+/*
+ * Kidty / Haravan theme: .site-overlay is 100vh and becomes visible with
+ * body.locked-scroll, which captures wheel events so the page stops scrolling.
+ * Let wheel pass through; panels still close via .header-action-toggle.
+ */
+.site-overlay {
+  pointer-events: none !important;
+}
+
+/* Mobile theme rule locks body overflow; keep vertical scroll in SPA */
+@media (max-width: 991px) {
+  body.locked-scroll {
+    overflow-x: hidden;
+    overflow-y: auto !important;
+  }
+}

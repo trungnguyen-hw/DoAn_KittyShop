@@ -1,0 +1,66 @@
+[
+  {
+    "id": "trang-chu",
+    "bodyClass": "index",
+    "mainProps": {
+      "className": "mainContent-theme  main-index "
+    },
+    "paginate": false
+  },
+  {
+    "id": "landing",
+    "bodyClass": "page",
+    "mainProps": {
+      "className": "mainContent-theme "
+    },
+    "paginate": false
+  },
+  {
+    "id": "san-pham",
+    "bodyClass": "collection",
+    "mainProps": {
+      "className": "mainContent-theme "
+    },
+    "paginate": false
+  },
+  {
+    "id": "tat-ca",
+    "bodyClass": "collection",
+    "mainProps": {
+      "className": "mainContent-theme "
+    },
+    "paginate": true
+  },
+  {
+    "id": "tin-tuc",
+    "bodyClass": "blog",
+    "mainProps": {
+      "className": "mainContent-theme "
+    },
+    "paginate": false
+  },
+  {
+    "id": "dam-style-1",
+    "bodyClass": "product",
+    "mainProps": {
+      "className": "mainContent-theme "
+    },
+    "paginate": false
+  },
+  {
+    "id": "dam-style-2",
+    "bodyClass": "product",
+    "mainProps": {
+      "className": "mainContent-theme "
+    },
+    "paginate": false
+  },
+  {
+    "id": "dam-style-3",
+    "bodyClass": "product",
+    "mainProps": {
+      "className": "mainContent-theme "
+    },
+    "paginate": false
+  }
+]
