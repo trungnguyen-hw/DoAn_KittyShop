@@ -50,18 +50,18 @@ CREATE TABLE IF NOT EXISTS products (
 
 -- Default data for Products matching Kidty Shop
 INSERT IGNORE INTO products (id, name, slug, price, old_price, image, category_id, stock, status) VALUES 
-(1, 'Áo vest bé trai FM V5', 'ao-vest-be-trai-fm-v5', 450000, NULL, '/Sản Phẩm – Kidty Shop_files/pro-12_master.jpg', 2, 24, 'active'),
-(2, 'Body bé trai hình siêu nhân', 'body-be-trai-hinh-sieu-nhan', 189000, NULL, '/Sản Phẩm – Kidty Shop_files/pro-10_master.jpg', 3, 45, 'active'),
-(3, 'Body dài cho bé dễ thương', 'body-dai-cho-be', 199000, NULL, '/Sản Phẩm – Kidty Shop_files/pro-8_master.jpg', 3, 30, 'active'),
-(4, 'Body dài siêu nhân FM D08', 'body-dai-sieu-nhan-fm-d08', 210000, NULL, '/Sản Phẩm – Kidty Shop_files/pro-9_master.jpg', 3, 18, 'active'),
-(5, 'Body hoạt hình cho bé năng động', 'body-hoat-hinh-cho-be', 175000, NULL, '/Sản Phẩm – Kidty Shop_files/pro-6_master.jpg', 3, 52, 'active'),
+(1, 'Áo vest bé trai FM V5', 'ao-vest-be-trai-fm-v5', 450000, NULL, '/Sản Phẩm – Kidty Shop_files/pro-10_master.jpg', 2, 24, 'active'),
+(2, 'Body bé trai hình siêu nhân', 'body-be-trai-hinh-sieu-nhan', 189000, NULL, '/Sản Phẩm – Kidty Shop_files/pro-1_master.jpg', 3, 45, 'active'),
+(3, 'Body dài cho bé dễ thương', 'body-dai-cho-be', 199000, NULL, '/Sản Phẩm – Kidty Shop_files/pro-3_master.jpg', 3, 30, 'active'),
+(4, 'Body dài siêu nhân FM D08', 'body-dai-sieu-nhan-fm-d08', 210000, NULL, '/Sản Phẩm – Kidty Shop_files/pro-5_61ec3f7b79554b52b47ecdbdd502dc2e_grande.jpg', 3, 18, 'active'),
+(5, 'Body hoạt hình cho bé năng động', 'body-hoat-hinh-cho-be', 175000, NULL, '/Sản Phẩm – Kidty Shop_files/pro-15_grande.jpg', 3, 52, 'active'),
 (6, 'Body tam giác tay ngắn mát mẻ', 'body-tam-giac-tay-ngan', 150000, NULL, '/Sản Phẩm – Kidty Shop_files/pro-7_master.jpg', 3, 60, 'active'),
-(7, 'Đầm công chúa cho bé gái M003', 'dam-cong-chua-cho-be-gai-m003', 320000, NULL, '/Sản Phẩm – Kidty Shop_files/pro-3_master.jpg', 1, 12, 'active'),
-(8, 'Đầm công chúa bé gái xinh xắn', 'dam-cong-chua-cho-be-gai', 299000, NULL, '/Sản Phẩm – Kidty Shop_files/pro-4_master.jpg', 1, 15, 'active'),
+(7, 'Đầm công chúa cho bé gái M003', 'dam-cong-chua-cho-be-gai-m003', 320000, NULL, '/Sản Phẩm – Kidty Shop_files/pro-21_grande.jpg', 1, 12, 'active'),
+(8, 'Đầm công chúa bé gái xinh xắn', 'dam-cong-chua-cho-be-gai', 299000, NULL, '/Sản Phẩm – Kidty Shop_files/pro-13_53ad16c019174224ac3b64fc0bf06691_grande.jpg', 1, 15, 'active'),
 (9, 'Đầm Hoa Công Chúa FM-45', 'dam-hoa-cong-chua-fm-45', 389000, NULL, '/Đầm Hoa Công Chúa FM-45 – Kidty Shop - KIểu hiển thị 1_files/pro-16_master.jpg', 1, 8, 'active'),
-(10, 'Đồ vest lịch lãm cho bé trai', 'do-vest-cho-be-trai', 520000, NULL, '/Sản Phẩm – Kidty Shop_files/pro-14_master.jpg', 2, 10, 'active'),
-(11, 'Set áo rời quần DM A2', 'set-ao-roi-quan-dm-a2', 270000, NULL, '/Sản Phẩm – Kidty Shop_files/pro-1_master.jpg', 4, 35, 'active'),
-(12, 'Set áo rời quần FM F0045', 'set-ao-roi-quan-fm-f0045', 285000, NULL, '/Sản Phẩm – Kidty Shop_files/pro-2_master.jpg', 4, 22, 'active');
+(10, 'Đồ vest lịch lãm cho bé trai', 'do-vest-cho-be-trai', 520000, NULL, '/Sản Phẩm – Kidty Shop_files/pro-6_master.jpg', 2, 10, 'active'),
+(11, 'Set áo rời quần DM A2', 'set-ao-roi-quan-dm-a2', 270000, NULL, '/Sản Phẩm – Kidty Shop_files/pro-9_master.jpg', 4, 35, 'active'),
+(12, 'Set áo rời quần FM F0045', 'set-ao-roi-quan-fm-f0045', 285000, NULL, '/Sản Phẩm – Kidty Shop_files/pro-8_0d32e65e43ea4abeaf91e51b93043965_grande.jpg', 4, 22, 'active');
 
 -- 4. Orders Table
 CREATE TABLE IF NOT EXISTS orders (

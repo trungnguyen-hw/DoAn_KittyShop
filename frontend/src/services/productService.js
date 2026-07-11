@@ -6,7 +6,7 @@ const DEFAULT_PRODUCTS = [
     id: "ao-vest-be-trai-fm-v5",
     title: "Áo vest bé trai FM V5",
     price: 450000,
-    image: "/Sản Phẩm – Kidty Shop_files/pro-12_master.jpg",
+    image: "/Sản Phẩm – Kidty Shop_files/pro-10_master.jpg",
     description: "Áo vest sang trọng cho bé trai. Thích hợp đi tiệc, đi đám cưới, chất liệu cao cấp thoáng mát.",
     category: "Bé Trai",
     stock: 24
@@ -15,7 +15,7 @@ const DEFAULT_PRODUCTS = [
     id: "body-be-trai-hinh-sieu-nhan",
     title: "Body bé trai hình siêu nhân",
     price: 189000,
-    image: "/Sản Phẩm – Kidty Shop_files/pro-10_master.jpg",
+    image: "/Sản Phẩm – Kidty Shop_files/pro-1_master.jpg",
     description: "Bộ body đáng yêu hình siêu nhân cho bé trai năng động, chất thun cotton co giãn tốt.",
     category: "Sơ Sinh",
     stock: 45
@@ -24,7 +24,7 @@ const DEFAULT_PRODUCTS = [
     id: "body-dai-cho-be",
     title: "Body dài cho bé dễ thương",
     price: 199000,
-    image: "/Sản Phẩm – Kidty Shop_files/pro-8_master.jpg",
+    image: "/Sản Phẩm – Kidty Shop_files/pro-3_master.jpg",
     description: "Body dài giữ ấm cơ thể cho bé sơ sinh, họa tiết động vật ngộ nghĩnh.",
     category: "Sơ Sinh",
     stock: 30
@@ -33,7 +33,7 @@ const DEFAULT_PRODUCTS = [
     id: "body-dai-sieu-nhan-fm-d08",
     title: "Body dài siêu nhân FM D08",
     price: 210000,
-    image: "/Sản Phẩm – Kidty Shop_files/pro-9_master.jpg",
+    image: "/Sản Phẩm – Kidty Shop_files/pro-5_61ec3f7b79554b52b47ecdbdd502dc2e_grande.jpg",
     description: "Bộ body dài hóa trang siêu nhân chất cotton mềm mịn, bảo vệ làn da nhạy cảm của bé.",
     category: "Sơ Sinh",
     stock: 18
@@ -42,7 +42,7 @@ const DEFAULT_PRODUCTS = [
     id: "body-hoat-hinh-cho-be",
     title: "Body hoạt hình cho bé năng động",
     price: 175000,
-    image: "/Sản Phẩm – Kidty Shop_files/pro-6_master.jpg",
+    image: "/Sản Phẩm – Kidty Shop_files/pro-15_grande.jpg",
     description: "Bộ body ngắn in hình hoạt hình dễ thương cho bé thỏa sức vui chơi ngày hè.",
     category: "Sơ Sinh",
     stock: 52
@@ -60,7 +60,7 @@ const DEFAULT_PRODUCTS = [
     id: "dam-cong-chua-cho-be-gai-m003",
     title: "Đầm công chúa cho bé gái M003",
     price: 320000,
-    image: "/Sản Phẩm – Kidty Shop_files/pro-3_master.jpg",
+    image: "/Sản Phẩm – Kidty Shop_files/pro-21_grande.jpg",
     description: "Đầm xòe công chúa bồng bềnh, đính hoa tinh tế cho bé gái tỏa sáng trong mọi bữa tiệc.",
     category: "Bé Gái",
     stock: 12
@@ -69,7 +69,7 @@ const DEFAULT_PRODUCTS = [
     id: "dam-cong-chua-cho-be-gai",
     title: "Đầm công chúa bé gái xinh xắn",
     price: 299000,
-    image: "/Sản Phẩm – Kidty Shop_files/pro-4_master.jpg",
+    image: "/Sản Phẩm – Kidty Shop_files/pro-13_53ad16c019174224ac3b64fc0bf06691_grande.jpg",
     description: "Thiết kế đầm ren công chúa cao cấp, thướt tha, mềm mại và không gây ngứa cho da bé.",
     category: "Bé Gái",
     stock: 15
@@ -87,7 +87,7 @@ const DEFAULT_PRODUCTS = [
     id: "do-vest-cho-be-trai",
     title: "Đồ vest lịch lãm cho bé trai",
     price: 520000,
-    image: "/Sản Phẩm – Kidty Shop_files/pro-14_master.jpg",
+    image: "/Sản Phẩm – Kidty Shop_files/pro-6_master.jpg",
     description: "Set đồ vest 3 chi tiết lịch lãm chuẩn soái ca nhí cho các bé trai diện Tết và sự kiện lớn.",
     category: "Bé Trai",
     stock: 10
@@ -96,7 +96,7 @@ const DEFAULT_PRODUCTS = [
     id: "set-ao-roi-quan-dm-a2",
     title: "Set áo rời quần DM A2",
     price: 270000,
-    image: "/Sản Phẩm – Kidty Shop_files/pro-1_master.jpg",
+    image: "/Sản Phẩm – Kidty Shop_files/pro-9_master.jpg",
     description: "Set bộ rời năng động cho bé trai bé gái mặc ở nhà hoặc đi học, chất thun da cá bền màu.",
     category: "Unisex",
     stock: 35
@@ -105,7 +105,7 @@ const DEFAULT_PRODUCTS = [
     id: "set-ao-roi-quan-fm-f0045",
     title: "Set áo rời quần FM F0045",
     price: 285000,
-    image: "/Sản Phẩm – Kidty Shop_files/pro-2_master.jpg",
+    image: "/Sản Phẩm – Kidty Shop_files/pro-8_0d32e65e43ea4abeaf91e51b93043965_grande.jpg",
     description: "Bộ thun cotton rời họa tiết đáng yêu, đường may tỉ mỉ, mặc mát mẻ dễ chịu cả ngày.",
     category: "Unisex",
     stock: 22
