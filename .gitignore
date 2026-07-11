@@ -15,6 +15,9 @@ dist-ssr
 .env.*
 backend/.env
 backend/node_modules
+.vercel
+build
+
 
 # Editor directories and files
 .vscode/*
