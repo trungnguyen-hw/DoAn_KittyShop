@@ -136,8 +136,8 @@ export default function DamFm45Page() {
     const sameCat = others.filter(p => (p.category || p.category_name) === (product.category || product.category_name));
     // Find products in different category
     const diffCat = others.filter(p => (p.category || p.category_name) !== (product.category || product.category_name));
-    // Combine, prioritizing same category, and limit to 3 (which fits exactly 1 row in desktop Bootstrap col-md-4)
-    return [...sameCat, ...diffCat].slice(0, 3);
+    // Combine, prioritizing same category, and limit to 6 (which fits exactly 2 rows in desktop Bootstrap col-md-4)
+    return [...sameCat, ...diffCat].slice(0, 6);
   }, [product, allProducts, slug]);
 
   useLayoutEffect(() => {
