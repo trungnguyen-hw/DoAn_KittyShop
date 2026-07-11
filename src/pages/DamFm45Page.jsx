@@ -17,7 +17,6 @@ import main3 from "../generated/dam-style-3-main.html?raw";
 import scripts3 from "../generated/dam-style-3-scripts.json";
 import { KidtyDocument } from "../components/kidty/KidtyDocument.jsx";
 import { productService } from "../services/productService.js";
-import { useCart } from "../context/CartContext.jsx";
 import { request } from "../services/api.js";
 import { formatPrice } from "../components/ProductCard.jsx";
 
@@ -57,14 +56,10 @@ export default function DamFm45Page() {
   const { slug } = useParams();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { addToCart } = useCart();
 
   const isFm45 = !slug || slug === "dam-hoa-cong-chua-fm-45";
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(!isFm45);
-  const [quantity, setQuantity] = useState(1);
-  const [selectedSize, setSelectedSize] = useState("100");
-  const [selectedColor, setSelectedColor] = useState("Hồng");
 
   const variant = useMemo(
     () => resolveVariant(searchParams),
@@ -110,20 +105,6 @@ export default function DamFm45Page() {
     }
     fetchProduct();
   }, [slug, isFm45]);
-
-  const handleAddToCart = () => {
-    if (!product) return;
-    const variantStr = `${selectedColor} / ${selectedSize}`;
-    const cartProduct = {
-      id: product.id || product.slug,
-      title: product.title || product.name,
-      price: product.price,
-      image: product.image,
-      quantity: quantity,
-      variant: variantStr
-    };
-    addToCart(cartProduct);
-  };
 
   // 1. Rendering for loading state of custom products
   if (loading && !isFm45) {
@@ -174,195 +155,36 @@ export default function DamFm45Page() {
     );
   }
 
-  // 3. Rendering for custom product details (Dynamic view)
+  // Get raw main HTML
+  let mainHtml = b.mainHtml;
+
   if (!isFm45 && product) {
-    return (
-      <KidtyDocument
-        bodyClass="product"
-        prelude={BUNDLES[3].prelude}
-        header={BUNDLES[3].header}
-        postHtml={BUNDLES[3].postHtml}
-        scripts={BUNDLES[3].scripts}
-      >
-        <main className="mainContent-theme" style={{ padding: "40px 0", background: "#fafafa" }}>
-          <div className="container" style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 15px" }}>
-            {/* Breadcrumb */}
-            <div className="breadcrumb" style={{ marginBottom: "20px", fontSize: "14px", color: "#777" }}>
-              <a href="/" onClick={(e) => { e.preventDefault(); navigate("/"); }} style={{ color: "#333", textDecoration: "none" }}>Trang chủ</a>
-              <span style={{ margin: "0 8px" }}>/</span>
-              <a href="/collections/all" onClick={(e) => { e.preventDefault(); navigate("/collections/all"); }} style={{ color: "#333", textDecoration: "none" }}>Sản phẩm</a>
-              <span style={{ margin: "0 8px" }}>/</span>
-              <span style={{ color: "#888" }}>{product.title || product.name}</span>
-            </div>
+    // 1. Replace title in text, titles and alts
+    mainHtml = mainHtml.replaceAll("Đầm Hoa Công Chúa FM-45", product.title || product.name || "");
+    mainHtml = mainHtml.replaceAll("Đầm hoa công chúa fm-45", product.title || product.name || "");
 
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "40px", background: "#fff", padding: "30px", borderRadius: "12px", boxShadow: "0 4px 20px rgba(0,0,0,0.05)" }}>
-              {/* Left media */}
-              <div style={{ flex: "1 1 450px", minWidth: "300px" }}>
-                <div style={{ position: "relative", overflow: "hidden", borderRadius: "8px", border: "1px solid #eee", background: "#fcfcfc" }}>
-                  <img 
-                    src={product.image} 
-                    alt={product.title || product.name} 
-                    style={{ width: "100%", height: "auto", display: "block", objectFit: "contain", maxHeight: "500px", margin: "0 auto" }} 
-                  />
-                </div>
-              </div>
+    // 2. Replace price
+    const priceStr = formatPrice(product.price) + "₫";
+    if (product.oldPrice && product.oldPrice > product.price) {
+      const oldPriceStr = formatPrice(product.oldPrice) + "₫";
+      const priceHtml = `<span class="pro-price">${priceStr}</span><del style="margin-left: 10px; color: #999; font-size: 0.8em; font-weight: normal;">${oldPriceStr}</del>`;
+      mainHtml = mainHtml.replace(/<span class="pro-price">[\s\S]*?<\/span>/i, priceHtml);
+      mainHtml = mainHtml.replace(/<span class="pro-price">389,000₫<\/span>/gi, priceHtml);
+    } else {
+      mainHtml = mainHtml.replaceAll("389,000₫", priceStr);
+      mainHtml = mainHtml.replaceAll("389,000đ", priceStr);
+    }
 
-              {/* Right details */}
-              <div style={{ flex: "1 1 450px", display: "flex", flexDirection: "column", gap: "20px" }}>
-                <div>
-                  <span style={{ fontSize: "12px", textTransform: "uppercase", background: "#fce8e6", color: "#f94c43", padding: "3px 8px", borderRadius: "3px", fontWeight: "bold" }}>
-                    {product.category || "Trẻ Em"}
-                  </span>
-                  <h1 style={{ fontSize: "28px", fontWeight: "700", marginTop: "10px", marginBottom: "5px", color: "#333" }}>
-                    {product.title || product.name}
-                  </h1>
-                  <div style={{ fontSize: "14px", color: "#666" }}>
-                    Trạng thái: <span style={{ color: product.stock > 0 ? "#28a745" : "#dc3545", fontWeight: "bold" }}>
-                      {product.stock > 0 ? `Còn hàng (${product.stock} sản phẩm)` : "Hết hàng"}
-                    </span>
-                  </div>
-                </div>
+    // 3. Replace all original static files and Haravan CDN images with product.image
+    mainHtml = mainHtml.replace(/\/Đầm Hoa Công Chúa FM-45[^"]+?pro-\d+_[a-z0-9_]+\.(jpg|png|jpeg)/gi, product.image);
+    mainHtml = mainHtml.replace(/\/\/product.hstatic.net\/1000309391\/product\/pro-\d+_[a-z0-9_]+\.(jpg|png|jpeg)/gi, product.image);
 
-                {/* Price row */}
-                <div style={{ background: "#fafafa", padding: "15px 20px", borderRadius: "6px", display: "flex", alignItems: "center", gap: "15px" }}>
-                  <span style={{ fontSize: "24px", color: "#f94c43", fontWeight: "bold" }}>
-                    {formatPrice(product.price)}đ
-                  </span>
-                  {product.oldPrice > product.price && (
-                    <span style={{ fontSize: "16px", color: "#999", textDecoration: "line-through" }}>
-                      {formatPrice(product.oldPrice)}đ
-                    </span>
-                  )}
-                </div>
-
-                {/* Description */}
-                <div style={{ fontSize: "15px", color: "#555", lineHeight: "1.6" }}>
-                  <p>{product.description || "Thời trang trẻ em cao cấp Kidty Shop. Thiết kế độc đáo, đường may tinh xảo, chất vải mềm mịn và co giãn tốt, an toàn tuyệt đối cho làn da nhạy cảm của bé."}</p>
-                </div>
-
-                {/* Color Selector */}
-                <div>
-                  <h4 style={{ fontSize: "14px", fontWeight: "bold", marginBottom: "8px", color: "#333" }}>MÀU SẮC:</h4>
-                  <div style={{ display: "flex", gap: "10px" }}>
-                    {["Hồng", "Xanh", "Trắng", "Vàng"].map((color) => (
-                      <button
-                        key={color}
-                        onClick={() => setSelectedColor(color)}
-                        style={{
-                          padding: "6px 15px",
-                          fontSize: "14px",
-                          borderRadius: "4px",
-                          border: selectedColor === color ? "2px solid #f94c43" : "1px solid #ccc",
-                          background: selectedColor === color ? "#fdf3f2" : "#fff",
-                          color: selectedColor === color ? "#f94c43" : "#333",
-                          cursor: "pointer",
-                          fontWeight: selectedColor === color ? "bold" : "normal"
-                        }}
-                      >
-                        {color}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Size Selector */}
-                <div>
-                  <h4 style={{ fontSize: "14px", fontWeight: "bold", marginBottom: "8px", color: "#333" }}>KÍCH THƯỚC (SIZE):</h4>
-                  <div style={{ display: "flex", gap: "10px" }}>
-                    {["80", "90", "100", "110", "120"].map((size) => (
-                      <button
-                        key={size}
-                        onClick={() => setSelectedSize(size)}
-                        style={{
-                          padding: "6px 15px",
-                          fontSize: "14px",
-                          borderRadius: "4px",
-                          border: selectedSize === size ? "2px solid #f94c43" : "1px solid #ccc",
-                          background: selectedSize === size ? "#fdf3f2" : "#fff",
-                          color: selectedSize === size ? "#f94c43" : "#333",
-                          cursor: "pointer",
-                          fontWeight: selectedSize === size ? "bold" : "normal"
-                        }}
-                      >
-                        {size}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Quantity Area */}
-                <div>
-                  <h4 style={{ fontSize: "14px", fontWeight: "bold", marginBottom: "8px", color: "#333" }}>SỐ LƯỢNG:</h4>
-                  <div style={{ display: "flex", alignItems: "center" }}>
-                    <button
-                      onClick={() => setQuantity(q => Math.max(1, q - 1))}
-                      style={{ padding: "6px 12px", border: "1px solid #ccc", background: "#f5f5f5", cursor: "pointer", borderRadius: "4px 0 0 4px" }}
-                    >
-                      -
-                    </button>
-                    <input
-                      type="text"
-                      value={quantity}
-                      readOnly
-                      style={{ width: "50px", textAlign: "center", padding: "6px 0", borderTop: "1px solid #ccc", borderBottom: "1px solid #ccc", borderLeft: "none", borderRight: "none", fontSize: "14px" }}
-                    />
-                    <button
-                      onClick={() => setQuantity(q => q + 1)}
-                      style={{ padding: "6px 12px", border: "1px solid #ccc", background: "#f5f5f5", cursor: "pointer", borderRadius: "0 4px 4px 0" }}
-                    >
-                      +
-                    </button>
-                  </div>
-                </div>
-
-                {/* Add to Cart button */}
-                <div style={{ marginTop: "10px" }}>
-                  <button
-                    onClick={handleAddToCart}
-                    disabled={product.stock <= 0}
-                    style={{
-                      width: "100%",
-                      padding: "15px 0",
-                      background: product.stock > 0 ? "#f94c43" : "#ccc",
-                      color: "#fff",
-                      border: "none",
-                      borderRadius: "6px",
-                      fontSize: "16px",
-                      fontWeight: "bold",
-                      cursor: product.stock > 0 ? "pointer" : "not-allowed",
-                      boxShadow: "0 4px 10px rgba(249, 76, 67, 0.2)",
-                      transition: "background 0.2s"
-                    }}
-                  >
-                    {product.stock > 0 ? "THÊM VÀO GIỎ HÀNG" : "HẾT HÀNG"}
-                  </button>
-                </div>
-
-                {/* Security/Trust flags */}
-                <div style={{ display: "flex", justifyContent: "space-between", borderTop: "1px solid #eee", paddingTop: "20px", marginTop: "10px" }}>
-                  <div style={{ textAlign: "center", flex: 1 }}>
-                    <span style={{ fontSize: "20px" }}>🚚</span>
-                    <p style={{ fontSize: "11px", color: "#666", margin: "5px 0 0" }}>Freeship từ 500k</p>
-                  </div>
-                  <div style={{ textAlign: "center", flex: 1, borderLeft: "1px solid #eee", borderRight: "1px solid #eee" }}>
-                    <span style={{ fontSize: "20px" }}>🔄</span>
-                    <p style={{ fontSize: "11px", color: "#666", margin: "5px 0 0" }}>Đổi trả trong 7 ngày</p>
-                  </div>
-                  <div style={{ textAlign: "center", flex: 1 }}>
-                    <span style={{ fontSize: "20px" }}>☘️</span>
-                    <p style={{ fontSize: "11px", color: "#666", margin: "5px 0 0" }}>Cotton 100% Organic</p>
-                  </div>
-                </div>
-
-              </div>
-            </div>
-          </div>
-        </main>
-      </KidtyDocument>
-    );
+    // 4. Replace description content
+    const descReg = /<div class="description-productdetail">[\s\S]*?<\/div>/i;
+    const descContent = `<div class="description-productdetail"><p>${product.description || "Thời trang trẻ em cao cấp Kidty Shop. Chất liệu mềm mại, thoáng mát và co giãn tốt, cực kỳ an toàn cho bé."}</p></div>`;
+    mainHtml = mainHtml.replace(descReg, descContent);
   }
 
-  // 4. Default view (DamFm45Page static bundle view)
   return (
     <KidtyDocument
       bodyClass="product"
@@ -371,7 +193,7 @@ export default function DamFm45Page() {
       postHtml={b.postHtml}
       scripts={b.scripts}
     >
-      <main className="mainContent-theme " dangerouslySetInnerHTML={{ __html: b.mainHtml }} />
+      <main className="mainContent-theme " dangerouslySetInnerHTML={{ __html: mainHtml }} />
     </KidtyDocument>
   );
 }
