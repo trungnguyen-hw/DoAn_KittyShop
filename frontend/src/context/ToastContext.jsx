@@ -124,6 +124,7 @@ function ToastCard({ toast, onClose }) {
           <button className="kidty-toast-btn primary" onClick={() => handleAction("/checkout")}>Thanh toán</button>
         </div>
       )}
+      <div className="kidty-toast-progress-bar"></div>
     </div>
   );
 }

@@ -28,9 +28,36 @@ export function useKidtyCartBridge() {
 
   useEffect(() => {
     const onClick = (e) => {
-      if (e.target.closest("#add-to-cart")) {
+      const btn = e.target.closest("#add-to-cart, #add-to-cartbottom");
+      if (btn) {
         e.preventDefault();
-        addToCart();
+        if (btn.classList.contains("btn-loading") || btn.classList.contains("btn-success-state")) {
+          return;
+        }
+
+        const originalHtml = btn.innerHTML;
+        
+        // Add loading state
+        btn.classList.add("btn-loading");
+        btn.innerHTML = `<span class="btn-spinner"></span> Đang thêm...`;
+        btn.style.pointerEvents = "none";
+        
+        // Trigger cart count update after a premium artificial delay (500ms)
+        setTimeout(() => {
+          addToCart();
+          
+          // Switch to success checkmark state
+          btn.classList.remove("btn-loading");
+          btn.classList.add("btn-success-state");
+          btn.innerHTML = `✓ Đã thêm!`;
+          
+          // Revert button to original state after 1.5s
+          setTimeout(() => {
+            btn.classList.remove("btn-success-state");
+            btn.innerHTML = originalHtml;
+            btn.style.pointerEvents = "auto";
+          }, 1500);
+        }, 500);
       }
     };
     document.addEventListener("click", onClick, true);
