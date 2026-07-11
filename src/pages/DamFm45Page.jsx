@@ -144,9 +144,13 @@ export default function DamFm45Page() {
     const container = document.querySelector(".list-productRelated .content-product-list.row");
     if (container) {
       container.innerHTML = ""; // Clear static HTML related cards
-      setRelatedHost(container);
+      requestAnimationFrame(() => {
+        setRelatedHost(container);
+      });
     } else {
-      setRelatedHost(null);
+      requestAnimationFrame(() => {
+        setRelatedHost(null);
+      });
     }
   }, [product, loading, variant]);
 
