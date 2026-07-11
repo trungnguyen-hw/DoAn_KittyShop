@@ -6,16 +6,24 @@ dotenv.config();
 const databaseUrl = process.env.DATABASE_URL?.trim();
 const databaseHost = (process.env.DB_HOST || "localhost").trim();
 const localDatabaseHosts = new Set(["localhost", "127.0.0.1", "::1"]);
+const databaseCa = process.env.DB_CA_CERT?.replace(/\\n/g, "\n").trim();
+let databaseUrlForMysql2 = databaseUrl;
+
+if (databaseUrl) {
+  try {
+    const parsedDatabaseUrl = new URL(databaseUrl);
+    parsedDatabaseUrl.searchParams.delete("ssl-mode");
+    databaseUrlForMysql2 = parsedDatabaseUrl.toString();
+  } catch {
+    throw new Error("DATABASE_URL is not a valid MySQL URL");
+  }
+}
 
 if (process.env.NODE_ENV === "production") {
   let usesLocalDatabase = !databaseUrl && localDatabaseHosts.has(databaseHost);
 
   if (databaseUrl) {
-    try {
-      usesLocalDatabase = localDatabaseHosts.has(new URL(databaseUrl).hostname);
-    } catch {
-      throw new Error("DATABASE_URL is not a valid MySQL URL");
-    }
+    usesLocalDatabase = localDatabaseHosts.has(new URL(databaseUrl).hostname);
   }
 
   if (usesLocalDatabase) {
@@ -37,7 +45,20 @@ const connectionOptions = {
 };
 
 const pool = databaseUrl
-  ? mysql.createPool(databaseUrl)
+  ? mysql.createPool({
+      uri: databaseUrlForMysql2,
+      ...(databaseCa && {
+        ssl: {
+          ca: databaseCa,
+          rejectUnauthorized: true
+        }
+      }),
+      waitForConnections: true,
+      connectionLimit: 5,
+      queueLimit: 0,
+      enableKeepAlive: true,
+      connectTimeout: 10000
+    })
   : mysql.createPool(connectionOptions);
 
 export async function testConnection() {
