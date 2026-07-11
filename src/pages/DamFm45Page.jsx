@@ -159,11 +159,15 @@ export default function DamFm45Page() {
   let mainHtml = b.mainHtml;
 
   if (!isFm45 && product) {
-    // 1. Replace title in text, titles and alts
+    // 1. Replace all original static files and Haravan CDN images with product.image FIRST (before replacing title modifies folder names)
+    mainHtml = mainHtml.replace(/\/Đầm Hoa Công Chúa FM-45[^"]+?pro-\d+_[a-z0-9_]+\.(jpg|png|jpeg)/gi, product.image);
+    mainHtml = mainHtml.replace(/\/\/product.hstatic.net\/1000309391\/product\/pro-\d+_[a-z0-9_]+\.(jpg|png|jpeg)/gi, product.image);
+
+    // 2. Replace title in text, titles and alts
     mainHtml = mainHtml.replaceAll("Đầm Hoa Công Chúa FM-45", product.title || product.name || "");
     mainHtml = mainHtml.replaceAll("Đầm hoa công chúa fm-45", product.title || product.name || "");
 
-    // 2. Replace price
+    // 3. Replace price
     const priceStr = formatPrice(product.price) + "₫";
     if (product.oldPrice && product.oldPrice > product.price) {
       const oldPriceStr = formatPrice(product.oldPrice) + "₫";
@@ -174,10 +178,6 @@ export default function DamFm45Page() {
       mainHtml = mainHtml.replaceAll("389,000₫", priceStr);
       mainHtml = mainHtml.replaceAll("389,000đ", priceStr);
     }
-
-    // 3. Replace all original static files and Haravan CDN images with product.image
-    mainHtml = mainHtml.replace(/\/Đầm Hoa Công Chúa FM-45[^"]+?pro-\d+_[a-z0-9_]+\.(jpg|png|jpeg)/gi, product.image);
-    mainHtml = mainHtml.replace(/\/\/product.hstatic.net\/1000309391\/product\/pro-\d+_[a-z0-9_]+\.(jpg|png|jpeg)/gi, product.image);
 
     // 4. Replace description content
     const descReg = /<div class="description-productdetail">[\s\S]*?<\/div>/i;

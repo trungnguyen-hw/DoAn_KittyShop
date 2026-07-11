@@ -19,9 +19,9 @@ export const getProducts = async (req, res) => {
 
   // Filter by search query
   if (search) {
-    query += " AND (p.name LIKE ? OR p.slug LIKE ? OR p.description LIKE ?)";
+    query += " AND (p.name LIKE ? OR p.slug LIKE ?)";
     const searchVal = `%${search}%`;
-    queryParams.push(searchVal, searchVal, searchVal);
+    queryParams.push(searchVal, searchVal);
   }
 
   // Filter by category slug or name
