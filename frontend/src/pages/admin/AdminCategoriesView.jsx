@@ -1,11 +1,9 @@
 import { useState, useMemo, useEffect } from "react";
-import { adminStorageService } from "../../services/adminStorage.js";
-import { productService } from "../../services/productService.js";
 import { request } from "../../services/api.js";
 
 export default function AdminCategoriesView() {
-  const [categories, setCategories] = useState(() => adminStorageService.getCategories());
-  const [products, setProducts] = useState(() => productService.getProducts());
+  const [categories, setCategories] = useState([]);
+  const [products, setProducts] = useState([]);
   
   // Modal/Form States
   const [showModal, setShowModal] = useState(false);
@@ -17,10 +15,8 @@ export default function AdminCategoriesView() {
     try {
       const catData = await request("/categories");
       setCategories(catData);
-      adminStorageService.saveCategories(catData);
     } catch (err) {
-      console.warn("Backend offline, loading categories fallback:", err.message);
-      setCategories(adminStorageService.getCategories());
+      console.error("Unable to load categories from backend:", err.message);
     }
     
     try {
@@ -32,10 +28,8 @@ export default function AdminCategoriesView() {
         oldPrice: p.old_price !== undefined ? p.old_price : p.oldPrice
       }));
       setProducts(mapped);
-      productService.saveProducts(mapped);
     } catch (err) {
-      console.warn("Backend offline, loading products fallback:", err.message);
-      setProducts(productService.getProducts());
+      console.error("Unable to load products from backend:", err.message);
     }
   };
 
@@ -114,12 +108,10 @@ export default function AdminCategoriesView() {
         );
       }
     } catch (err) {
-      console.warn("Backend error, saving to local storage fallback:", err.message);
-      if (editingCategory) {
-        adminStorageService.updateCategory(editingCategory.id, catName.trim(), catStatus);
-      } else {
-        adminStorageService.addCategory(catName.trim());
+      if (window.showToast) {
+        window.showToast(err.message, "error", "Lưu danh mục thất bại");
       }
+      return;
     }
 
     setShowModal(false);
@@ -136,8 +128,10 @@ export default function AdminCategoriesView() {
           window.showToast("Đã xóa danh mục sản phẩm", "success", "Xóa danh mục");
         }
       } catch (err) {
-        console.warn("Backend error, deleting from local storage fallback:", err.message);
-        adminStorageService.deleteCategory(id);
+        if (window.showToast) {
+          window.showToast(err.message, "error", "Xóa danh mục thất bại");
+        }
+        return;
       }
       loadData();
     }
@@ -151,8 +145,10 @@ export default function AdminCategoriesView() {
         body: { status: newStatus }
       });
     } catch (err) {
-      console.warn("Backend error, toggling status in local storage fallback:", err.message);
-      adminStorageService.updateCategory(cat.id, cat.name, newStatus);
+      if (window.showToast) {
+        window.showToast(err.message, "error", "Cập nhật trạng thái thất bại");
+      }
+      return;
     }
     loadData();
     if (window.showToast) {

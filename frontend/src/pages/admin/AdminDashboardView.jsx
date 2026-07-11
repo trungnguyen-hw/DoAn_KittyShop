@@ -1,12 +1,10 @@
 import { useState, useMemo, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { productService } from "../../services/productService.js";
 import { request } from "../../services/api.js";
 
-// Helper to seed sample orders if none exist
+/* Legacy sample orders are intentionally disabled and never persisted.
 const seedMockOrders = () => {
-  const existing = localStorage.getItem("kidty-orders");
-  if (!existing || JSON.parse(existing).length === 0) {
+  if (false) {
     const samples = [
       {
         id: "ORD-948201",
@@ -116,17 +114,13 @@ const seedMockOrders = () => {
         status: "cancelled"
       }
     ];
-    localStorage.setItem("kidty-orders", JSON.stringify(samples));
   }
 };
+*/
 
 export default function AdminDashboardView() {
-  const [products, setProducts] = useState(() => productService.getProducts());
-  const [orders, setOrders] = useState(() => {
-    seedMockOrders();
-    const savedOrders = localStorage.getItem("kidty-orders");
-    return savedOrders ? JSON.parse(savedOrders) : [];
-  });
+  const [products, setProducts] = useState([]);
+  const [orders, setOrders] = useState([]);
   const [stats, setStats] = useState(null);
   const [viewingOrder, setViewingOrder] = useState(null);
   const [showOrderDetailModal, setShowOrderDetailModal] = useState(false);
@@ -146,7 +140,7 @@ export default function AdminDashboardView() {
           setOrders(mappedOrders);
         }
       } catch (err) {
-        console.warn("Backend API stats offline, falling back to local storage:", err.message);
+        console.error("Unable to load dashboard stats:", err.message);
       }
       
       try {
@@ -160,7 +154,7 @@ export default function AdminDashboardView() {
         }));
         setProducts(mappedProds);
       } catch (err) {
-        console.warn("Backend API products offline, falling back to local storage:", err.message);
+        console.error("Unable to load dashboard products:", err.message);
       }
     };
     fetchDashboardData();
@@ -306,7 +300,10 @@ export default function AdminDashboardView() {
         body: { status: newStatus }
       });
     } catch (err) {
-      console.warn("Backend error, updating dashboard order status:", err.message);
+      if (window.showToast) {
+        window.showToast(err.message, "error", "Cập nhật đơn thất bại");
+      }
+      return;
     }
 
     const updated = orders.map(o => {
@@ -315,7 +312,6 @@ export default function AdminDashboardView() {
       }
       return o;
     });
-    localStorage.setItem("kidty-orders", JSON.stringify(updated));
     setOrders(updated);
     if (viewingOrder && viewingOrder.id === orderId) {
       setViewingOrder({ ...viewingOrder, status: newStatus });

@@ -3,16 +3,42 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const pool = mysql.createPool({
-  host: process.env.DB_HOST || "localhost",
+const databaseUrl = process.env.DATABASE_URL?.trim();
+const databaseHost = (process.env.DB_HOST || "localhost").trim();
+const localDatabaseHosts = new Set(["localhost", "127.0.0.1", "::1"]);
+
+if (process.env.NODE_ENV === "production") {
+  let usesLocalDatabase = !databaseUrl && localDatabaseHosts.has(databaseHost);
+
+  if (databaseUrl) {
+    try {
+      usesLocalDatabase = localDatabaseHosts.has(new URL(databaseUrl).hostname);
+    } catch {
+      throw new Error("DATABASE_URL is not a valid MySQL URL");
+    }
+  }
+
+  if (usesLocalDatabase) {
+    throw new Error("Production requires an online MySQL database");
+  }
+}
+
+const connectionOptions = {
+  host: databaseHost,
   user: process.env.DB_USER || "root",
   password: process.env.DB_PASSWORD !== undefined ? process.env.DB_PASSWORD : "",
   database: process.env.DB_NAME || "kidty_shop",
   port: process.env.DB_PORT || 3306,
   waitForConnections: true,
   connectionLimit: 10,
-  queueLimit: 0
-});
+  queueLimit: 0,
+  enableKeepAlive: true,
+  connectTimeout: 10000
+};
+
+const pool = databaseUrl
+  ? mysql.createPool(databaseUrl)
+  : mysql.createPool(connectionOptions);
 
 export async function testConnection() {
   const connection = await pool.getConnection();

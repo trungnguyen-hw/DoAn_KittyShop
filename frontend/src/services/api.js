@@ -1,14 +1,8 @@
-const baseURL = import.meta.env.VITE_API_URL || "http://127.0.0.1:5000/api";
+import { API_URL } from "../config/api.js";
 
 export async function request(endpoint, options = {}) {
-  const isLocalHostBase = baseURL.includes("127.0.0.1") || baseURL.includes("localhost");
-  const isProductionClient = window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1";
-
-  if (isLocalHostBase && isProductionClient) {
-    throw new Error("Skipping localhost API request in production environment");
-  }
-
-  const url = `${baseURL}${endpoint}`;
+  const normalizedEndpoint = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
+  const url = `${API_URL}${normalizedEndpoint}`;
 
   // Read adminToken from localStorage
   const token = localStorage.getItem("adminToken");

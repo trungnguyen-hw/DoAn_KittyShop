@@ -35,9 +35,9 @@ export const adminAuthService = {
           return userStr;
         }
       }
-      return "trungngo1903";
+      return "Admin";
     } catch {
-      return "trungngo1903";
+      return "Admin";
     }
   }
 };

@@ -2,8 +2,12 @@ import pool, { testConnection } from "../../config/db.js";
 import bcrypt from "bcryptjs";
 
 export async function seedDatabase() {
-  const adminUsername = process.env.ADMIN_USERNAME || "trungngo1903";
-  const adminPassword = process.env.ADMIN_PASSWORD || "Trunglove123";
+  const adminUsername = process.env.ADMIN_USERNAME;
+  const adminPassword = process.env.ADMIN_PASSWORD;
+
+  if (!adminUsername || !adminPassword) {
+    throw new Error("ADMIN_USERNAME and ADMIN_PASSWORD are required to seed an admin");
+  }
 
   try {
     // Check if admin user already exists in 'admins' table

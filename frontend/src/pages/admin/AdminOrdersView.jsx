@@ -2,10 +2,7 @@ import { useState, useMemo, useEffect } from "react";
 import { request } from "../../services/api.js";
 
 export default function AdminOrdersView() {
-  const [orders, setOrders] = useState(() => {
-    const savedOrders = localStorage.getItem("kidty-orders");
-    return savedOrders ? JSON.parse(savedOrders) : [];
-  });
+  const [orders, setOrders] = useState([]);
 
   const fetchOrders = async () => {
     try {
@@ -13,12 +10,16 @@ export default function AdminOrdersView() {
       const mapped = data.map(o => ({
         ...o,
         name: o.customer_name || o.name,
-        totalPrice: o.total_price || o.totalPrice
+        totalPrice: Number(o.total_price || o.totalPrice || 0),
+        createdAt: o.created_at || o.createdAt,
+        items: (o.items || []).map(item => ({ ...item, title: item.product_name || item.title }))
       }));
       setOrders(mapped);
-      localStorage.setItem("kidty-orders", JSON.stringify(mapped));
     } catch (err) {
-      console.warn("Backend offline, loading orders from local storage:", err.message);
+      console.error("Unable to load orders from backend:", err.message);
+      if (window.showToast) {
+        window.showToast(err.message, "error", "Không tải được đơn hàng");
+      }
     }
   };
 
@@ -56,7 +57,10 @@ export default function AdminOrdersView() {
         body: { status: newStatus }
       });
     } catch (err) {
-      console.warn("Backend error, updating status:", err.message);
+      if (window.showToast) {
+        window.showToast(err.message, "error", "Cập nhật thất bại");
+      }
+      return;
     }
 
     const updated = orders.map(o => {
@@ -65,7 +69,6 @@ export default function AdminOrdersView() {
       }
       return o;
     });
-    localStorage.setItem("kidty-orders", JSON.stringify(updated));
     setOrders(updated);
     if (viewingOrder && viewingOrder.id === orderId) {
       setViewingOrder({ ...viewingOrder, status: newStatus });
@@ -82,11 +85,13 @@ export default function AdminOrdersView() {
           method: "DELETE"
         });
       } catch (err) {
-        console.warn("Backend error, deleting order:", err.message);
+        if (window.showToast) {
+          window.showToast(err.message, "error", "Xóa đơn thất bại");
+        }
+        return;
       }
 
       const updated = orders.filter(o => o.id !== orderId);
-      localStorage.setItem("kidty-orders", JSON.stringify(updated));
       setOrders(updated);
       if (window.showToast) {
         window.showToast("Đã xóa đơn hàng thành công", "success", "Xóa đơn hàng");
@@ -190,12 +195,16 @@ export default function AdminOrdersView() {
                             const mappedDetail = {
                               ...detail,
                               name: detail.customer_name || detail.name,
-                              totalPrice: detail.total_price || detail.totalPrice
+                              totalPrice: Number(detail.total_price || detail.totalPrice || 0),
+                              createdAt: detail.created_at || detail.createdAt,
+                              items: (detail.items || []).map(item => ({ ...item, title: item.product_name || item.title }))
                             };
                             setViewingOrder(mappedDetail);
                           } catch (err) {
-                            console.warn("Backend error, showing order from local list:", err.message);
-                            setViewingOrder(o);
+                            if (window.showToast) {
+                              window.showToast(err.message, "error", "Không tải được chi tiết đơn");
+                            }
+                            return;
                           }
                           setShowOrderDetailModal(true);
                         }}

@@ -13,13 +13,14 @@ dist-ssr
 *.local
 .env
 .env.*
-!.env.example
-!backend/.env.example
+**/.env
+**/.env.*
+!**/.env.example
 backend/.env
 backend/node_modules
 .vercel
+**/.vercel
 build
-
 
 # Editor directories and files
 .vscode/*
@@ -31,6 +32,3 @@ build
 *.njsproj
 *.sln
 *.sw?
-
-.vercel
-.env*

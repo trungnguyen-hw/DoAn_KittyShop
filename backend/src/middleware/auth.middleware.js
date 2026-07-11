@@ -6,12 +6,19 @@ dotenv.config();
 export const protect = (req, res, next) => {
   let token;
 
+  if (!process.env.JWT_SECRET) {
+    return res.status(500).json({
+      success: false,
+      message: "Máy chủ chưa được cấu hình xác thực"
+    });
+  }
+
   if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
     try {
       token = req.headers.authorization.split(" ")[1];
 
       // Decode and verify token
-      const decoded = jwt.verify(token, process.env.JWT_SECRET || "kidty_shop_secret_key");
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
       req.user = decoded;
       return next();

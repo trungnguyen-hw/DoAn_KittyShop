@@ -1,9 +1,8 @@
 import { useState, useMemo, useEffect } from "react";
-import { productService } from "../../services/productService.js";
 import { request } from "../../services/api.js";
 
 export default function AdminProductsView() {
-  const [products, setProducts] = useState(() => productService.getProducts());
+  const [products, setProducts] = useState([]);
   
   // Search, Filter & Sort
   const [searchQuery, setSearchQuery] = useState("");
@@ -36,10 +35,11 @@ export default function AdminProductsView() {
         oldPrice: p.old_price !== undefined ? p.old_price : p.oldPrice
       }));
       setProducts(mapped);
-      productService.saveProducts(mapped);
     } catch (err) {
-      console.warn("Backend offline, loading products from local storage fallback:", err.message);
-      setProducts(productService.getProducts());
+      console.error("Unable to load products from backend:", err.message);
+      if (window.showToast) {
+        window.showToast(err.message, "error", "Không tải được sản phẩm");
+      }
     }
   };
 
@@ -55,7 +55,7 @@ export default function AdminProductsView() {
   const filteredProducts = useMemo(() => {
     const filtered = products.filter(p => {
       const matchSearch = p.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          p.id.toLowerCase().includes(searchQuery.toLowerCase());
+                          String(p.id).toLowerCase().includes(searchQuery.toLowerCase());
       const matchCat = categoryFilter === "all" || p.category === categoryFilter;
       return matchSearch && matchCat;
     });
@@ -152,19 +152,10 @@ export default function AdminProductsView() {
         );
       }
     } catch (err) {
-      console.warn("Backend error, saving to local storage fallback:", err.message);
-      if (editingProduct) {
-        productService.updateProduct(editingProduct.id, { ...payload, title: productForm.title });
-      } else {
-        productService.addProduct({ ...payload, title: productForm.title });
-      }
       if (window.showToast) {
-        window.showToast(
-          "Lỗi thao tác trên máy chủ, đã lưu tạm vào local storage",
-          "warning",
-          "Lưu tạm local storage"
-        );
+        window.showToast(err.message, "error", "Lưu sản phẩm thất bại");
       }
+      return;
     }
 
     setShowProductModal(false);
@@ -181,8 +172,10 @@ export default function AdminProductsView() {
           window.showToast("Đã xóa sản phẩm khỏi cửa hàng", "success", "Xóa sản phẩm");
         }
       } catch (err) {
-        console.warn("Backend error, deleting from local storage fallback:", err.message);
-        productService.deleteProduct(id);
+        if (window.showToast) {
+          window.showToast(err.message, "error", "Xóa sản phẩm thất bại");
+        }
+        return;
       }
       loadData();
     }
@@ -196,8 +189,10 @@ export default function AdminProductsView() {
         body: { status: nextStatus }
       });
     } catch (err) {
-      console.warn("Backend error, updating status in local storage fallback:", err.message);
-      productService.updateProduct(p.id, { status: nextStatus });
+      if (window.showToast) {
+        window.showToast(err.message, "error", "Cập nhật trạng thái thất bại");
+      }
+      return;
     }
     loadData();
     if (window.showToast) {

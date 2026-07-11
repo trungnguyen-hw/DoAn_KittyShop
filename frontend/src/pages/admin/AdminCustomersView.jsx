@@ -1,11 +1,22 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { request } from "../../services/api.js";
 
 export default function AdminCustomersView() {
-  const [orders] = useState(() => {
-    const savedOrders = localStorage.getItem("kidty-orders");
-    return savedOrders ? JSON.parse(savedOrders) : [];
-  });
+  const [orders, setOrders] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+
+  useEffect(() => {
+    request("/orders")
+      .then((data) => setOrders(data.map((order) => ({
+        ...order,
+        name: order.customer_name || order.name,
+        totalPrice: Number(order.total_price || order.totalPrice || 0),
+        createdAt: order.created_at || order.createdAt
+      }))))
+      .catch((error) => {
+        console.error("Unable to load customers from backend:", error.message);
+      });
+  }, []);
 
   const customerList = useMemo(() => {
     const custMap = {};

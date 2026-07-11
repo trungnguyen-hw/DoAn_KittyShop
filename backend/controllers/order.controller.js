@@ -23,31 +23,43 @@ export const createOrder = async (req, res) => {
     address, 
     payment_method, 
     paymentMethod, 
-    note, 
-    items, 
-    totalPrice,
-    total_price 
+    note,
+    items
   } = req.body;
 
   const finalName = customer_name || name;
   const finalPayment = payment_method || paymentMethod || "cod";
 
-  if (!finalName || !phone || !address || !items || items.length === 0) {
+  if (!finalName?.trim() || !phone?.trim() || !address?.trim() || !Array.isArray(items) || items.length === 0) {
     return res.status(400).json({ success: false, message: "Vui lòng nhập đầy đủ thông tin đặt hàng" });
   }
 
-  // Securely calculate total_price dynamically from items array
-  let finalTotalPrice = 0;
-  for (const item of items) {
-    finalTotalPrice += Number(item.price) * (Number(item.quantity) || 1);
+  const normalizedItems = items.map((item) => ({
+    ...item,
+    price: Number(item.price),
+    quantity: Number(item.quantity)
+  }));
+
+  const hasInvalidItem = normalizedItems.some((item) => (
+    !Number.isFinite(item.price) || item.price < 0 ||
+    !Number.isInteger(item.quantity) || item.quantity < 1 ||
+    !(item.product_name || item.name || item.title)?.trim()
+  ));
+
+  if (hasInvalidItem) {
+    return res.status(400).json({ success: false, message: "Dữ liệu sản phẩm trong đơn hàng không hợp lệ" });
   }
+
+  const finalTotalPrice = normalizedItems.reduce((total, item) => total + item.price * item.quantity, 0);
 
   const orderCode = "ORD" + Date.now() + Math.floor(100 + Math.random() * 900);
 
-  const connection = await pool.getConnection();
-  await connection.beginTransaction();
+  let connection;
 
   try {
+    connection = await pool.getConnection();
+    await connection.beginTransaction();
+
     // 1. Insert order
     const [orderResult] = await connection.query(
       "INSERT INTO orders (order_code, customer_name, phone, email, address, note, payment_method, total_price, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending')",
@@ -57,7 +69,7 @@ export const createOrder = async (req, res) => {
     const insertedOrderId = orderResult.insertId;
 
     // 2. Insert order items
-    for (const item of items) {
+    for (const item of normalizedItems) {
       const productId = item.product_id || item.id;
       
       await connection.query(
@@ -66,8 +78,8 @@ export const createOrder = async (req, res) => {
           insertedOrderId,
           productId && !isNaN(productId) ? Number(productId) : null,
           item.product_name || item.name || item.title || "Sản phẩm",
-          Number(item.price),
-          Number(item.quantity) || 1,
+          item.price,
+          item.quantity,
           item.image || null,
           item.variant || ""
         ]
@@ -77,7 +89,7 @@ export const createOrder = async (req, res) => {
       if (productId && !isNaN(productId)) {
         await connection.query(
           "UPDATE products SET stock = GREATEST(0, stock - ?) WHERE id = ?",
-          [Number(item.quantity) || 1, Number(productId)]
+          [item.quantity, Number(productId)]
         );
       }
     }
@@ -85,11 +97,11 @@ export const createOrder = async (req, res) => {
     await connection.commit();
     return res.status(201).json({ success: true, orderId: insertedOrderId, orderCode, message: "Đặt hàng thành công!" });
   } catch (error) {
-    await connection.rollback();
+    if (connection) await connection.rollback();
     console.error("Order Transaction Error:", error.message);
     return res.status(500).json({ success: false, message: "Lỗi xử lý đặt hàng tại máy chủ" });
   } finally {
-    connection.release();
+    connection?.release();
   }
 };
 

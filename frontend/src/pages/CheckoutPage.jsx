@@ -83,20 +83,12 @@ export default function CheckoutPage() {
         totalPrice,
         createdAt: new Date().toISOString()
       };
-      // sync local orders
-      const existing = localStorage.getItem("kidty-orders");
-      const orders = existing ? JSON.parse(existing) : [];
-      orders.push(placedOrder);
-      localStorage.setItem("kidty-orders", JSON.stringify(orders));
-
-      // 1. Clear cart in localStorage
+      // Only clear the cart after the backend has persisted the order.
       localStorage.removeItem("kidty-cart");
 
-      // 2. Clear cart context and update cart icon
       clearCart();
       window.dispatchEvent(new Event("storage"));
 
-      // 3. Show Success Modal
       setSuccessOrder(placedOrder);
     } catch (err) {
       console.error("API checkout error:", err);

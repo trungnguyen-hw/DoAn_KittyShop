@@ -34,9 +34,14 @@ export const loginAdmin = async (req, res) => {
       });
     }
 
+    if (!process.env.JWT_SECRET) {
+      console.error("JWT_SECRET is not configured");
+      return res.status(500).json({ success: false, message: "Máy chủ chưa được cấu hình xác thực" });
+    }
+
     const token = jwt.sign(
       { id: admin.id, username: admin.username, role: admin.role },
-      process.env.JWT_SECRET || "kidty_shop_secret_key",
+      process.env.JWT_SECRET,
       { expiresIn: "7d" }
     );
 

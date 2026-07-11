@@ -1,104 +1,72 @@
-# Kidty Shop - Hệ Thống Cửa Hàng Thời Trang Trẻ Em Fullstack
+# Kidty Shop
 
-Dự án website bán hàng thời trang trẻ em cao cấp Kidty Shop gồm hai phần chính: Giao diện người dùng (Frontend SPA React + Vite) và Máy chủ dịch vụ (Backend REST API Express + MySQL).
+Kidty Shop là ứng dụng full-stack dùng chung một GitHub repository nhưng triển khai thành hai Vercel Project độc lập.
 
----
+## Cấu trúc
 
-## 1. Công Nghệ Sử Dụng (Tech Stack)
-* **Frontend:** React 19, React Router DOM 7, Vite 8, CSS thuần (Vanilla CSS)
-* **Backend:** Node.js, Express, JSON Web Token (JWT), bcryptjs, CORS
-* **Cơ sở dữ liệu (Database):** MySQL / MariaDB
+```text
+.
+├── frontend/   # React 19 + Vite 8
+├── backend/    # Express 4 REST API + MySQL
+├── .gitignore
+└── README.md
+```
 
----
+Frontend gọi Backend duy nhất qua `VITE_API_URL`. Backend lưu sản phẩm, tài khoản Admin và đơn hàng trong MySQL; không dùng bộ nhớ hoặc file cục bộ để lưu dữ liệu production.
 
-## 2. Hướng Dẫn Cài Đặt (Installation)
+## Chạy cục bộ
 
-### Khởi tạo Cơ sở dữ liệu:
-1. Mở phần mềm XAMPP Control Panel và kích hoạt dịch vụ **MySQL**.
-2. Truy cập `http://localhost/phpmyadmin/` và tạo mới một cơ sở dữ liệu có tên là `kidty_shop`.
-3. Nhập (Import) tệp tin cơ sở dữ liệu `kidty_shop.sql` ở thư mục gốc vào cơ sở dữ liệu vừa tạo.
+Tạo `frontend/.env` và `backend/.env` từ hai file `.env.example`, sau đó:
 
-### Cài đặt dependencies cho dự án:
-Mở Terminal tại thư mục gốc và chạy:
 ```bash
-# Cài đặt thư viện cho Frontend
-npm install
-
-# Di chuyển vào thư mục backend và cài đặt thư viện
 cd backend
 npm install
+npm run start
 ```
 
----
+Trong terminal khác:
 
-## 3. Cấu Hình Biến Môi Trường (Environment Variables)
-
-### Cấu hình Backend (`backend/.env`):
-Tạo tệp `.env` trong thư mục `backend/` dựa trên `.env.example`:
-```env
-PORT=5000
-DB_HOST=127.0.0.1
-DB_USER=root
-DB_PASSWORD=
-DB_NAME=kidty_shop
-JWT_SECRET=your_jwt_secret_key_here
-ADMIN_USERNAME=your_admin_username
-ADMIN_PASSWORD=your_admin_password
-```
-
-### Cấu hình Frontend (`.env`):
-Tạo tệp `.env` tại thư mục gốc của dự án dựa trên `.env.example`:
-```env
-VITE_API_URL=http://127.0.0.1:5000/api
-```
-
----
-
-## 4. Cách Chạy Dự Án Cục Bộ (Running Locally)
-
-### Khởi chạy Backend Server:
-Mở một tab Terminal mới tại thư mục `backend/` và chạy:
 ```bash
+cd frontend
+npm install
 npm run dev
 ```
-*Server sẽ chạy ở cổng `5000` (Địa chỉ: `http://localhost:5000`). Hệ thống sẽ tự động thực hiện tiến trình seed tài khoản quản trị khi kết nối thành công.*
 
-### Khởi chạy Frontend:
-Mở một tab Terminal khác tại thư mục gốc và chạy:
-```bash
-npm run dev
+Schema MySQL nằm tại `backend/src/database/schema.sql`. Chỉ chạy `npm run seed:admin` khi đã chủ động cấu hình `ADMIN_USERNAME` và `ADMIN_PASSWORD`; Backend không tự seed khi khởi động.
+
+## API
+
+- `GET /api/health`
+- `POST /api/auth/login`
+- `GET /api/products`
+- `GET /api/products/:id`
+- `GET /api/products/slug/:slug`
+- `GET /api/categories`
+- `POST /api/orders`
+- Các route quản trị dùng Bearer token JWT.
+
+## Triển khai Vercel
+
+Tạo hai Project từ cùng repository:
+
+| Project | Root Directory | Build / Output |
+| --- | --- | --- |
+| Frontend | `frontend` | `npm run build` / `dist` |
+| Backend | `backend` | cấu hình trong `backend/vercel.json` |
+
+Biến Frontend:
+
+```text
+VITE_API_URL=https://<backend-domain>/api
 ```
-*Frontend sẽ chạy dưới máy chủ phát triển Vite ở địa chỉ: `http://localhost:5173` (hoặc cổng tiếp theo nếu bị trùng).*
 
----
+Biến Backend:
 
-## 5. Lệnh Build Biên Dịch (Production Build)
-
-Để biên dịch Frontend dự án sang tệp tin tĩnh (nằm trong thư mục `dist/`):
-```bash
-npm run build
+```text
+NODE_ENV
+FRONTEND_URL
+DATABASE_URL
+JWT_SECRET
 ```
 
-Để chạy thử bản dựng tĩnh trên local:
-```bash
-npm run preview
-```
-
----
-
-## 6. Hướng Dẫn Triển Khai (Deployment Guide)
-
-### Triển khai Frontend lên Vercel:
-1. Đẩy toàn bộ mã nguồn của bạn lên GitHub repository cá nhân.
-2. Đăng nhập vào Vercel, chọn **Add New Project** và nhập Repository của bạn.
-3. Cấu hình cài đặt dự án:
-   - **Framework Preset:** Vite
-   - **Root Directory:** `./` (Thư mục gốc)
-   - **Build Command:** `npm run build`
-   - **Output Directory:** `dist`
-   - **Environment Variables:** Thêm biến `VITE_API_URL` trỏ về địa chỉ API Backend thực tế của bạn (ví dụ: `https://api.yourdomain.com/api`).
-4. Nhấn **Deploy**. Tệp cấu hình `vercel.json` sẽ tự động đảm nhận việc chuyển hướng mọi request con SPA về `index.html` để tránh lỗi F5 404.
-
-### Triển khai Backend và Database:
-- **Backend (Express):** Có thể triển khai lên các dịch vụ như **Render**, **Railway**, hoặc **Heroku**. Cần thiết lập biến môi trường tương tự như tệp `.env`.
-- **Database (MySQL):** Khuyên dùng dịch vụ MySQL đám mây từ **Aiven**, **Railway**, hoặc **Render** để kết nối ổn định thay vì localhost.
+Có thể dùng `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME` thay cho `DATABASE_URL`. Production bắt buộc dùng MySQL online; không dùng `localhost`. Nếu cần tạo Admin ban đầu, cấu hình tạm `ADMIN_USERNAME` và `ADMIN_PASSWORD`, chạy seed có chủ đích rồi loại bỏ hai biến này nếu không còn cần.
