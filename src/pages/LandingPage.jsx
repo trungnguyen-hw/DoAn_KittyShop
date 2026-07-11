@@ -6,6 +6,7 @@ import scripts from "../generated/landing-scripts.json";
 import { KidtyDocument } from "../components/kidty/KidtyDocument.jsx";
 import { productService } from "../services/productService.js";
 import ProductCard, { formatPrice } from "../components/ProductCard.jsx";
+import { request } from "../services/api.js";
 import "../landing-page.css";
 
 const normalizeProduct = (product) => {
@@ -30,8 +31,7 @@ export default function LandingPage() {
   useEffect(() => {
     async function loadProducts() {
       try {
-        const res = await fetch("http://127.0.0.1:5000/api/products");
-        const data = await res.json();
+        const data = await request("/products");
         const apiProducts = Array.isArray(data)
           ? data
           : data.data || data.products || [];

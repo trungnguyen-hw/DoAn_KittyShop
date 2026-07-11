@@ -10,6 +10,7 @@ import { TatCaPagination } from "../components/TatCaPagination.jsx";
 import { KidtyDocument } from "../components/kidty/KidtyDocument.jsx";
 import { productService } from "../services/productService.js";
 import ProductCard from "../components/ProductCard.jsx";
+import { request } from "../services/api.js";
 
 // Combine HTML layout. The product-list-host is placed inside the open .row.filter-here div, which is later closed by after.
 const fullHtml = before + '<div id="product-list-host"></div>' + after;
@@ -80,8 +81,7 @@ export default function TatCaSanPhamPage() {
   useEffect(() => {
     async function loadProducts() {
       try {
-        const res = await fetch("http://127.0.0.1:5000/api/products");
-        const data = await res.json();
+        const data = await request("/products");
         const apiProducts = Array.isArray(data)
           ? data
           : data.data || data.products || [];
