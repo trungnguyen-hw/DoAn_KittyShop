@@ -159,30 +159,57 @@ export default function DamFm45Page() {
   let mainHtml = b.mainHtml;
 
   if (!isFm45 && product) {
-    // 1. Replace all original static files and Haravan CDN images with product.image FIRST (before replacing title modifies folder names)
-    mainHtml = mainHtml.replace(/\/Đầm Hoa Công Chúa FM-45[^"]+?pro-\d+_[a-z0-9_]+\.(jpg|png|jpeg)/gi, product.image);
-    mainHtml = mainHtml.replace(/\/\/product.hstatic.net\/1000309391\/product\/pro-\d+_[a-z0-9_]+\.(jpg|png|jpeg)/gi, product.image);
+    const parts = mainHtml.split('<div class="list-productRelated');
+    if (parts.length > 1) {
+      let detailHtml = parts[0];
+      let relatedHtml = '<div class="list-productRelated' + parts[1];
 
-    // 2. Replace title in text, titles and alts
-    mainHtml = mainHtml.replaceAll("Đầm Hoa Công Chúa FM-45", product.title || product.name || "");
-    mainHtml = mainHtml.replaceAll("Đầm hoa công chúa fm-45", product.title || product.name || "");
+      // 1. Replace all original static files and Haravan CDN images with product.image FIRST (before replacing title modifies folder names)
+      detailHtml = detailHtml.replace(/\/Đầm Hoa Công Chúa FM-45[^"]+?pro-\d+_[a-z0-9_]+\.(jpg|png|jpeg)/gi, product.image);
+      detailHtml = detailHtml.replace(/\/\/product.hstatic.net\/1000309391\/product\/pro-\d+_[a-z0-9_]+\.(jpg|png|jpeg)/gi, product.image);
 
-    // 3. Replace price
-    const priceStr = formatPrice(product.price) + "₫";
-    if (product.oldPrice && product.oldPrice > product.price) {
-      const oldPriceStr = formatPrice(product.oldPrice) + "₫";
-      const priceHtml = `<span class="pro-price">${priceStr}</span><del style="margin-left: 10px; color: #999; font-size: 0.8em; font-weight: normal;">${oldPriceStr}</del>`;
-      mainHtml = mainHtml.replace(/<span class="pro-price">[\s\S]*?<\/span>/i, priceHtml);
-      mainHtml = mainHtml.replace(/<span class="pro-price">389,000₫<\/span>/gi, priceHtml);
+      // 2. Replace title in text, titles and alts
+      detailHtml = detailHtml.replaceAll("Đầm Hoa Công Chúa FM-45", product.title || product.name || "");
+      detailHtml = detailHtml.replaceAll("Đầm hoa công chúa fm-45", product.title || product.name || "");
+
+      // 3. Replace price
+      const priceStr = formatPrice(product.price) + "₫";
+      if (product.oldPrice && product.oldPrice > product.price) {
+        const oldPriceStr = formatPrice(product.oldPrice) + "₫";
+        const priceHtml = `<span class="pro-price">${priceStr}</span><del style="margin-left: 10px; color: #999; font-size: 0.8em; font-weight: normal;">${oldPriceStr}</del>`;
+        detailHtml = detailHtml.replace(/<span class="pro-price">[\s\S]*?<\/span>/i, priceHtml);
+        detailHtml = detailHtml.replace(/<span class="pro-price">389,000₫<\/span>/gi, priceHtml);
+      } else {
+        detailHtml = detailHtml.replaceAll("389,000₫", priceStr);
+        detailHtml = detailHtml.replaceAll("389,000đ", priceStr);
+      }
+
+      // 4. Replace description content
+      const descReg = /<div class="description-productdetail">[\s\S]*?<\/div>/i;
+      const descContent = `<div class="description-productdetail"><p>${product.description || "Thời trang trẻ em cao cấp Kidty Shop. Chất liệu mềm mại, thoáng mát và co giãn tốt, cực kỳ an toàn cho bé."}</p></div>`;
+      detailHtml = detailHtml.replace(descReg, descContent);
+
+      mainHtml = detailHtml + relatedHtml;
     } else {
-      mainHtml = mainHtml.replaceAll("389,000₫", priceStr);
-      mainHtml = mainHtml.replaceAll("389,000đ", priceStr);
+      // Fallback if split point not found
+      mainHtml = mainHtml.replace(/\/Đầm Hoa Công Chúa FM-45[^"]+?pro-\d+_[a-z0-9_]+\.(jpg|png|jpeg)/gi, product.image);
+      mainHtml = mainHtml.replace(/\/\/product.hstatic.net\/1000309391\/product\/pro-\d+_[a-z0-9_]+\.(jpg|png|jpeg)/gi, product.image);
+      mainHtml = mainHtml.replaceAll("Đầm Hoa Công Chúa FM-45", product.title || product.name || "");
+      mainHtml = mainHtml.replaceAll("Đầm hoa công chúa fm-45", product.title || product.name || "");
+      const priceStr = formatPrice(product.price) + "₫";
+      if (product.oldPrice && product.oldPrice > product.price) {
+        const oldPriceStr = formatPrice(product.oldPrice) + "₫";
+        const priceHtml = `<span class="pro-price">${priceStr}</span><del style="margin-left: 10px; color: #999; font-size: 0.8em; font-weight: normal;">${oldPriceStr}</del>`;
+        mainHtml = mainHtml.replace(/<span class="pro-price">[\s\S]*?<\/span>/i, priceHtml);
+        mainHtml = mainHtml.replace(/<span class="pro-price">389,000₫<\/span>/gi, priceHtml);
+      } else {
+        mainHtml = mainHtml.replaceAll("389,000₫", priceStr);
+        mainHtml = mainHtml.replaceAll("389,000đ", priceStr);
+      }
+      const descReg = /<div class="description-productdetail">[\s\S]*?<\/div>/i;
+      const descContent = `<div class="description-productdetail"><p>${product.description || "Thời trang trẻ em cao cấp Kidty Shop. Chất liệu mềm mại, thoáng mát và co giãn tốt, cực kỳ an toàn cho bé."}</p></div>`;
+      mainHtml = mainHtml.replace(descReg, descContent);
     }
-
-    // 4. Replace description content
-    const descReg = /<div class="description-productdetail">[\s\S]*?<\/div>/i;
-    const descContent = `<div class="description-productdetail"><p>${product.description || "Thời trang trẻ em cao cấp Kidty Shop. Chất liệu mềm mại, thoáng mát và co giãn tốt, cực kỳ an toàn cho bé."}</p></div>`;
-    mainHtml = mainHtml.replace(descReg, descContent);
   }
 
   return (
