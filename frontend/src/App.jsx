@@ -1,4 +1,5 @@
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { useEffect } from "react";
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { CartProvider } from "./context/CartContext.jsx";
 import { ToastProvider } from "./context/ToastContext.jsx";
 import DamFm45Page from "./pages/DamFm45Page.jsx";
@@ -22,11 +23,22 @@ import AdminCouponsView from "./pages/admin/AdminCouponsView.jsx";
 import AdminRevenueView from "./pages/admin/AdminRevenueView.jsx";
 import AdminSettingsView from "./pages/admin/AdminSettingsView.jsx";
 
+function ScrollToTop() {
+  const { pathname, search } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname, search]);
+
+  return null;
+}
+
 export default function App() {
   return (
     <ToastProvider>
       <CartProvider>
         <BrowserRouter>
+          <ScrollToTop />
           <Routes>
             <Route path="/" element={<TrangChuPage />} />
             <Route path="/pages/ldp-kids-1" element={<LandingPage />} />

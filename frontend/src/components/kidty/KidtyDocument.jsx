@@ -88,8 +88,55 @@ export function KidtyDocument({
     };
   }, [prelude, header, children, postHtml]);
 
+  // Handle mobile menu outside clicks and link closures
+  useEffect(() => {
+    const handleOutsideClick = (e) => {
+      const activeMenu = document.querySelector(".header-action_menu.show-action");
+      if (activeMenu) {
+        const menuDrawer = activeMenu.querySelector(".site-menu");
+        const menuToggle = document.getElementById("site-menu-handle");
+        
+        // Close if clicked on overlay, outside of drawer, or clicked on any link inside the menu
+        if (e.target.classList.contains("site-overlay") || 
+            (menuDrawer && !menuDrawer.contains(e.target) && !menuToggle.contains(e.target)) ||
+            e.target.closest(".site-menu.menu-mobile a")) {
+          activeMenu.classList.remove("show-action");
+          document.body.classList.remove("locked-scroll");
+        }
+      }
+    };
+
+    document.addEventListener("click", handleOutsideClick, true);
+    return () => document.removeEventListener("click", handleOutsideClick, true);
+  }, []);
+
+  // Handle main product gallery image fade transition on src change
+  useEffect(() => {
+    const mainImgs = document.querySelectorAll(".product-image-feature");
+    const observers = [];
+
+    mainImgs.forEach(img => {
+      const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          if (mutation.attributeName === "src") {
+            img.style.opacity = "0.3";
+            setTimeout(() => {
+              img.style.opacity = "1";
+            }, 100);
+          }
+        });
+      });
+      observer.observe(img, { attributes: true });
+      observers.push(observer);
+    });
+
+    return () => {
+      observers.forEach(obs => obs.disconnect());
+    };
+  }, [prelude, header, children, postHtml]);
+
   return (
-    <div id="kidty-theme" className={bodyClass}>
+    <div id="kidty-theme" className={`${bodyClass || ""} page-fade-in`}>
       <div dangerouslySetInnerHTML={{ __html: prelude }} />
       <div dangerouslySetInnerHTML={{ __html: header }} />
       {children}

@@ -20,9 +20,11 @@ export default function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState("cod");
   const [note, setNote] = useState("");
   const [successOrder, setSuccessOrder] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (submitting) return;
 
     // Retrieve cart directly from localStorage
     let currentCart = [];
@@ -46,6 +48,8 @@ export default function CheckoutPage() {
       alert("Vui lòng điền đầy đủ các thông tin bắt buộc (*)");
       return;
     }
+
+    setSubmitting(true);
 
     // Format fields matching backend requirements
     const orderData = {
@@ -96,6 +100,8 @@ export default function CheckoutPage() {
       if (window.showToast) {
         window.showToast(errMsg, "error", "Đặt hàng thất bại");
       }
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -334,22 +340,29 @@ export default function CheckoutPage() {
                         <button
                           type="submit"
                           form="checkout-form"
-                          className="button dark"
+                          className={`button dark ${submitting ? "btn-loading" : ""}`}
+                          disabled={submitting}
                           style={{
                             width: "100%",
                             padding: "14px",
                             fontSize: "1.1em",
                             fontWeight: "bold",
-                            background: "#f53d2d",
+                            background: submitting ? "#999" : "#f53d2d",
                             color: "white",
                             border: "none",
                             borderRadius: "4px",
-                            cursor: "pointer",
+                            cursor: submitting ? "not-allowed" : "pointer",
                             textTransform: "uppercase",
-                            transition: "background 0.2s",
+                            transition: "all 0.2s",
                           }}
                         >
-                          Đặt hàng ngay
+                          {submitting ? (
+                            <>
+                              <span className="btn-spinner"></span> ĐANG XỬ LÝ...
+                            </>
+                          ) : (
+                            "Đặt hàng ngay"
+                          )}
                         </button>
                         <p style={{ textAlign: "center", marginTop: "15px", marginBottom: 0 }}>
                           <Link to="/cart" style={{ color: "#0066cc", textDecoration: "none" }}>

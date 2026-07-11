@@ -234,3 +234,108 @@ html {
   opacity: 1 !important;
   transform: translateY(0) !important;
 }
+
+/* 10. Mobile Menu Slide-In & Blur Overlay Overrides */
+.site-menu.menu-mobile {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 280px !important;
+  height: 100vh !important;
+  background: #ffffff !important;
+  box-shadow: 5px 0 25px rgba(0, 0, 0, 0.15) !important;
+  transform: translateX(-100%) !important;
+  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+  z-index: 1000000 !important;
+  visibility: hidden !important;
+}
+
+.header-action_menu.show-action .site-menu.menu-mobile {
+  transform: translateX(0) !important;
+  visibility: visible !important;
+}
+
+.site-overlay {
+  background: rgba(0, 0, 0, 0.45) !important;
+  backdrop-filter: blur(4px) !important;
+  -webkit-backdrop-filter: blur(4px) !important;
+}
+
+/* 11. Page Transitions */
+@keyframes pageFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-fade-in {
+  animation: pageFadeIn 0.22s cubic-bezier(0.25, 0.8, 0.25, 1) forwards !important;
+}
+
+/* 12. Tab Content Transitions */
+.tab-content, .tab-pane {
+  opacity: 0;
+  transform: translateY(6px);
+  animation: tabFadeIn 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) forwards !important;
+}
+
+@keyframes tabFadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 13. Accessibility - Reduced Motion Preference Support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-delay: -1ms !important;
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    background-attachment: initial !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
+  }
+
+  /* Reset layout transforms */
+  .reveal-on-scroll {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .product-block:hover, .product-card:hover {
+    transform: none !important;
+  }
+
+  .product-block:hover .product-img img, 
+  .product-card:hover .product-image {
+    transform: none !important;
+  }
+
+  .btn-addtocart:hover, 
+  .btncart-checkout:hover, 
+  .button.dark:hover {
+    transform: none !important;
+  }
+
+  .btn-addtocart:active, 
+  .btncart-checkout:active, 
+  .kidty-toast-btn:active, 
+  .button.dark:active {
+    transform: none !important;
+  }
+
+  .page-fade-in {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

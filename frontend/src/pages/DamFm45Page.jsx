@@ -154,7 +154,7 @@ export default function DamFm45Page() {
     }
   }, [product, loading, variant]);
 
-  // 1. Rendering for loading state of custom products
+  // 1. Rendering for loading state of custom products using a skeleton loader
   if (loading && !isFm45) {
     return (
       <KidtyDocument
@@ -164,16 +164,45 @@ export default function DamFm45Page() {
         postHtml={BUNDLES[3].postHtml}
         scripts={BUNDLES[3].scripts}
       >
-        <main className="mainContent-theme" style={{ padding: "100px 0", textAlign: "center" }}>
+        <main className="mainContent-theme" style={{ padding: "40px 0" }}>
           <div className="container">
-            <div className="loading-spinner" style={{ border: "4px solid #f3f3f3", borderTop: "4px solid #f94c43", borderRadius: "50%", width: "40px", height: "40px", animation: "spin 1s linear infinite", margin: "0 auto 20px" }}></div>
-            <p style={{ color: "#666" }}>Đang tải thông tin sản phẩm...</p>
-            <style>{`
-              @keyframes spin {
-                0% { transform: rotate(0deg); }
-                100% { transform: rotate(360deg); }
-              }
-            `}</style>
+            <div className="row" style={{ display: "flex", flexWrap: "wrap" }}>
+              {/* Product Gallery Skeleton */}
+              <div className="col-md-6 col-sm-12 col-xs-12" style={{ marginBottom: "30px" }}>
+                <div className="skeleton" style={{ width: "100%", paddingBottom: "100%", borderRadius: "8px" }}></div>
+                <div style={{ display: "flex", gap: "10px", marginTop: "15px" }}>
+                  <div className="skeleton" style={{ width: "80px", height: "80px", borderRadius: "6px" }}></div>
+                  <div className="skeleton" style={{ width: "80px", height: "80px", borderRadius: "6px" }}></div>
+                  <div className="skeleton" style={{ width: "80px", height: "80px", borderRadius: "6px" }}></div>
+                </div>
+              </div>
+              
+              {/* Product Details Skeleton */}
+              <div className="col-md-6 col-sm-12 col-xs-12">
+                <div className="skeleton" style={{ width: "70%", height: "32px", marginBottom: "15px" }}></div>
+                <div className="skeleton" style={{ width: "40%", height: "24px", marginBottom: "30px" }}></div>
+                
+                <div className="skeleton" style={{ width: "30%", height: "36px", marginBottom: "30px" }}></div>
+                
+                <div style={{ marginBottom: "20px" }}>
+                  <div className="skeleton" style={{ width: "20%", height: "16px", marginBottom: "10px" }}></div>
+                  <div style={{ display: "flex", gap: "8px" }}>
+                    <div className="skeleton" style={{ width: "40px", height: "40px", borderRadius: "50%" }}></div>
+                    <div className="skeleton" style={{ width: "40px", height: "40px", borderRadius: "50%" }}></div>
+                  </div>
+                </div>
+
+                <div style={{ marginBottom: "20px" }}>
+                  <div className="skeleton" style={{ width: "20%", height: "16px", marginBottom: "10px" }}></div>
+                  <div style={{ display: "flex", gap: "8px" }}>
+                    <div className="skeleton" style={{ width: "50px", height: "30px", borderRadius: "4px" }}></div>
+                    <div className="skeleton" style={{ width: "50px", height: "30px", borderRadius: "4px" }}></div>
+                  </div>
+                </div>
+                
+                <div className="skeleton" style={{ width: "100%", height: "48px", borderRadius: "4px", marginTop: "40px" }}></div>
+              </div>
+            </div>
           </div>
         </main>
       </KidtyDocument>

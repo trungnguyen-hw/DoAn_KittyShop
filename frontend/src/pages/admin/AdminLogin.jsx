@@ -77,7 +77,7 @@ export default function AdminLogin() {
   };
 
   return (
-    <div style={{
+    <div className="page-fade-in" style={{
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
