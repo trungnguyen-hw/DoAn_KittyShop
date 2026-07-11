@@ -34,6 +34,7 @@ export default function App() {
             <Route path="/collections/all" element={<TatCaSanPhamPage />} />
             <Route path="/blogs/news" element={<TinTucPage />} />
             <Route path="/products/dam-hoa-cong-chua-fm-45" element={<DamFm45Page />} />
+            <Route path="/products/:slug" element={<DamFm45Page />} />
             
             {/* Cart & Checkout */}
             <Route path="/cart" element={<CartPage />} />

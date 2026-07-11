@@ -9,8 +9,8 @@ function toAppPath(pathname, search) {
   if (pathname === "/collections/all") return `/collections/all${search}`;
   if (pathname === "/collections/san-pham") return `/collections/san-pham${search}`;
   if (pathname === "/blogs/news") return `/blogs/news${search}`;
-  if (pathname === "/products/dam-hoa-cong-chua-fm-45") {
-    return `/products/dam-hoa-cong-chua-fm-45${search}`;
+  if (pathname.startsWith("/products/")) {
+    return `${pathname}${search}`;
   }
   if (pathname === "/cart") return `/cart${search}`;
   if (pathname === "/checkout") return `/checkout${search}`;

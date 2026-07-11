@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import prelude from "../generated/landing-prelude.html?raw";
 import header from "../generated/landing-header.html?raw";
 import postHtml from "../generated/landing-post.html?raw";
@@ -22,6 +23,7 @@ const normalizeProduct = (product) => {
 };
 
 export default function LandingPage() {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("new");
   const [products, setProducts] = useState(() =>
     productService.getProducts().map(normalizeProduct)
@@ -194,21 +196,21 @@ export default function LandingPage() {
             <p>Tuyển chọn những trang phục hot nhất, thiết kế xinh xắn cho từng lứa tuổi của con</p>
           </div>
           <div className="ldp-categories-grid">
-            <div className="ldp-category-card" onClick={() => window.location.href = "/collections/all"}>
+            <div className="ldp-category-card" onClick={() => navigate("/collections/all")}>
               <img className="ldp-category-img" src="/Sản Phẩm – Kidty Shop_files/pro-4_master.jpg" alt="Đầm công chúa bé gái" />
               <div className="ldp-category-overlay">
                 <h3>Bé Gái Điệu Đà</h3>
                 <span className="shop-link">Xem bộ sưu tập →</span>
               </div>
             </div>
-            <div className="ldp-category-card" onClick={() => window.location.href = "/collections/all"}>
+            <div className="ldp-category-card" onClick={() => navigate("/collections/all")}>
               <img className="ldp-category-img" src="/Sản Phẩm – Kidty Shop_files/pro-12_master.jpg" alt="Đồ vest bé trai" />
               <div className="ldp-category-overlay">
                 <h3>Bé Trai Năng Động</h3>
                 <span className="shop-link">Xem bộ sưu tập →</span>
               </div>
             </div>
-            <div className="ldp-category-card" onClick={() => window.location.href = "/collections/all"}>
+            <div className="ldp-category-card" onClick={() => navigate("/collections/all")}>
               <img className="ldp-category-img" src="/Sản Phẩm – Kidty Shop_files/pro-8_master.jpg" alt="Quần áo sơ sinh" />
               <div className="ldp-category-overlay">
                 <h3>Trẻ Sơ Sinh Dễ Thương</h3>
@@ -301,7 +303,11 @@ export default function LandingPage() {
                   </div>
                 </div>
 
-                <a href="/products/dam-hoa-cong-chua-fm-45" className="ldp-btn ldp-btn-primary">
+                <a 
+                  href="/products/dam-hoa-cong-chua-fm-45" 
+                  onClick={(e) => { e.preventDefault(); navigate("/products/dam-hoa-cong-chua-fm-45"); }} 
+                  className="ldp-btn ldp-btn-primary"
+                >
                   Mua Ngay Với Giá Ưu Đãi
                 </a>
               </div>

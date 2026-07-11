@@ -75,7 +75,7 @@ export default function CartPage() {
                                 <td className="item">
                                   <h3>
                                     {/* Link to product detail page locally */}
-                                    <Link to="/products/dam-hoa-cong-chua-fm-45">{item.title}</Link>
+                                    <Link to={`/products/${item.id}`}>{item.title}</Link>
                                   </h3>
                                   {item.variant && <p className="variant">{item.variant}</p>}
                                   <p className="price">

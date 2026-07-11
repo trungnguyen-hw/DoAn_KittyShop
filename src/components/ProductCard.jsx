@@ -13,7 +13,7 @@ export default function ProductCard({ product }) {
     return null;
   }
 
-  const localUrl = `/products/dam-hoa-cong-chua-fm-45`;
+  const localUrl = `/products/${product.slug || product.id || "dam-hoa-cong-chua-fm-45"}`;
 
   let discountPercent = null;
   const price = Number(product.price);
