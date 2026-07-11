@@ -20,7 +20,17 @@ const PORT = process.env.PORT || 5000;
 app.use(cors({
   origin: (origin, callback) => {
     if (!origin) return callback(null, true);
+    // Allow localhost in dev
     if (/^https?:\/\/localhost(:\d+)?$/.test(origin) || /^https?:\/\/127\.0\.0\.1(:\d+)?$/.test(origin)) {
+      return callback(null, true);
+    }
+    // Allow configured FRONTEND_URL
+    const allowedFrontend = process.env.FRONTEND_URL;
+    if (allowedFrontend && origin === allowedFrontend.replace(/\/$/, "")) {
+      return callback(null, true);
+    }
+    // Allow vercel deployments
+    if (/\.vercel\.app$/.test(origin)) {
       return callback(null, true);
     }
     callback(new Error("CORS block: Origin not allowed"));
