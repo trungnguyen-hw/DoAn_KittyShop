@@ -142,10 +142,26 @@
 
 /* Mobile responsive details page overrides */
 @media (max-width: 991px) {
-  /* Hide the buggy mobile static jQuery slider */
+  /* Hide the buggy mobile static jQuery slider and duplicate action bar */
   #sliderproduct, 
-  .slide_product {
+  .slide_product,
+  .product-action-bottom {
     display: none !important;
+  }
+  
+  /* Clear floats and position elements in normal document flow to prevent overlap */
+  .product-image-block,
+  .product-content-desc,
+  #detail-product,
+  .product-image-detail,
+  .box__product-gallery {
+    float: none !important;
+    width: 100% !important;
+    position: static !important;
+    height: auto !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
   
   /* Force the main image wrapper to be visible on mobile and look great */
@@ -157,7 +173,8 @@
     margin-bottom: 20px !important;
   }
   
-  .product-image-detail > .hidden-sm.hidden-xs img {
+  .product-image-detail > .hidden-sm.hidden-xs img,
+  .product-image-feature {
     width: 100% !important;
     max-width: 320px !important; /* Ideal mobile image size */
     height: auto !important;
@@ -172,6 +189,7 @@
     padding: 15px !important;
     width: 100% !important;
     float: none !important;
+    position: static !important;
   }
   
   .product-title h1 {
