@@ -6,7 +6,7 @@ import postHtml from "../generated/landing-post.html?raw";
 import scripts from "../generated/landing-scripts.json";
 import { KidtyDocument } from "../components/kidty/KidtyDocument.jsx";
 import { productService } from "../services/productService.js";
-import ProductCard, { formatPrice } from "../components/ProductCard.jsx";
+import ProductCard from "../components/ProductCard.jsx";
 import { request } from "../services/api.js";
 import "../landing-page.css";
 
@@ -125,8 +125,30 @@ export default function LandingPage() {
   }, []);
 
   const dealProduct = useMemo(() => {
-    return validProducts.find(p => p.id === "dam-hoa-cong-chua-fm-45") || validProducts[0] || {};
+    const p = validProducts.find(p => p.slug === "dam-hoa-cong-chua-fm-45" || p.id === "dam-hoa-cong-chua-fm-45" || p.id === 9) || validProducts[0] || {};
+    if (p && (p.slug === "dam-hoa-cong-chua-fm-45" || p.id === "dam-hoa-cong-chua-fm-45" || p.id === 9) && (!p.oldPrice || p.oldPrice === 0)) {
+      return {
+        ...p,
+        oldPrice: 550000
+      };
+    }
+    return p;
   }, [validProducts]);
+
+  const salePrice = Number(dealProduct.price) || 0;
+  const originalPrice = Number(dealProduct.oldPrice || dealProduct.old_price) || 0;
+  const hasValidSale = salePrice > 0 &&
+                       originalPrice > 0 &&
+                       salePrice < originalPrice;
+
+  const discountPercent = hasValidSale ? Math.round(((originalPrice - salePrice) / originalPrice) * 100) : 0;
+
+  const formatVND = (value) => {
+    return new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND"
+    }).format(value);
+  };
 
   return (
     <KidtyDocument
@@ -291,12 +313,21 @@ export default function LandingPage() {
                 </div>
               </div>
               <div className="ldp-deal-content">
-                <span className="ldp-hero-badge">⚡ DEAL ĐẶC BIỆT HÔM NAY</span>
+                {hasValidSale && (
+                  <span className="ldp-hero-badge">⚡ DEAL ĐẶC BIỆT HÔM NAY</span>
+                )}
                 <h2>{dealProduct.title}</h2>
                 <div className="ldp-deal-price">
-                  <span className="new-price">{formatPrice(dealProduct.price)}đ</span>
-                  {dealProduct.oldPrice > dealProduct.price && (
-                    <span className="old-price">{formatPrice(dealProduct.oldPrice)}đ</span>
+                  <span className="new-price">{formatVND(salePrice)}</span>
+                  {hasValidSale && (
+                    <span className="old-price" style={{ textDecoration: "line-through", color: "#888", marginLeft: "10px" }}>
+                      {formatVND(originalPrice)}
+                    </span>
+                  )}
+                  {hasValidSale && (
+                    <span className="discount-badge" style={{ marginLeft: "10px", background: "#f94c43", color: "white", padding: "2px 8px", borderRadius: "4px", fontSize: "0.8em", fontWeight: "bold" }}>
+                      -{discountPercent}%
+                    </span>
                   )}
                 </div>
                 
