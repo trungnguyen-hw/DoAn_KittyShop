@@ -23,8 +23,14 @@ export default function ProductCard({ product }) {
     discountPercent = Math.round(((oldPrice - price) / oldPrice) * 100);
   }
 
+  const getImageUrl = (img) => {
+    if (!img) return "/Sản Phẩm – Kidty Shop_files/pro-12_master.jpg";
+    if (img.startsWith("http") || img.startsWith("https") || img.startsWith("/")) return img;
+    return "/" + img;
+  };
+
   const title = product.title || product.name;
-  const image = product.image || product.img || product.thumbnail;
+  const image = getImageUrl(product.image || product.img || product.thumbnail);
 
   return (
     <div className="product-card">

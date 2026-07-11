@@ -77,6 +77,12 @@ export default function DamFm45Page() {
       return;
     }
 
+    const normalizeImg = (img) => {
+      if (!img) return "/Sản Phẩm – Kidty Shop_files/pro-12_master.jpg";
+      if (img.startsWith("http") || img.startsWith("https") || img.startsWith("/")) return img;
+      return "/" + img;
+    };
+
     async function fetchProduct() {
       try {
         setLoading(true);
@@ -86,17 +92,18 @@ export default function DamFm45Page() {
           setProduct({
             ...data,
             title: data.name,
-            oldPrice: data.old_price || data.oldPrice || 0
+            oldPrice: data.old_price || data.oldPrice || 0,
+            image: normalizeImg(data.image)
           });
         } else {
           // Fallback to local storage
           const local = productService.getProducts().find(p => p.slug === slug || p.id === slug);
-          setProduct(local);
+          setProduct(local ? { ...local, image: normalizeImg(local.image) } : null);
         }
       } catch (err) {
         console.warn("Fetch product by slug failed, using local storage:", err);
         const local = productService.getProducts().find(p => p.slug === slug || p.id === slug);
-        setProduct(local);
+        setProduct(local ? { ...local, image: normalizeImg(local.image) } : null);
       } finally {
         setLoading(false);
       }

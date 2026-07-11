@@ -4,16 +4,20 @@ import { useNavigate } from "react-router-dom";
 const HOST = "kidty-shop.myharavan.com";
 
 function toAppPath(pathname, search) {
-  if (pathname === "/" || pathname === "") return `/${search}`;
-  if (pathname === "/pages/ldp-kids-1") return `/pages/ldp-kids-1${search}`;
-  if (pathname === "/collections/all") return `/collections/all${search}`;
-  if (pathname === "/collections/san-pham") return `/collections/san-pham${search}`;
-  if (pathname === "/blogs/news") return `/blogs/news${search}`;
-  if (pathname.startsWith("/products/")) {
-    return `${pathname}${search}`;
+  let cleanPath = pathname;
+  if (cleanPath.endsWith("/") && cleanPath.length > 1) {
+    cleanPath = cleanPath.slice(0, -1);
   }
-  if (pathname === "/cart") return `/cart${search}`;
-  if (pathname === "/checkout") return `/checkout${search}`;
+  if (cleanPath === "/" || cleanPath === "") return `/${search}`;
+  if (cleanPath === "/pages/ldp-kids-1") return `/pages/ldp-kids-1${search}`;
+  if (cleanPath === "/collections/all") return `/collections/all${search}`;
+  if (cleanPath === "/collections/san-pham") return `/collections/san-pham${search}`;
+  if (cleanPath === "/blogs/news") return `/blogs/news${search}`;
+  if (cleanPath.startsWith("/products/")) {
+    return `${cleanPath}${search}`;
+  }
+  if (cleanPath === "/cart") return `/cart${search}`;
+  if (cleanPath === "/checkout") return `/checkout${search}`;
   return null;
 }
 
@@ -45,6 +49,10 @@ export function useKidtySpaNav() {
 
       const a = e.target.closest("a[href]");
       if (!a) return;
+
+      const hrefAttr = a.getAttribute("href");
+      if (hrefAttr && hrefAttr.startsWith("#")) return;
+
       let url;
       try {
         url = new URL(a.href);
@@ -52,6 +60,11 @@ export function useKidtySpaNav() {
         return;
       }
       if (url.host !== HOST && url.host !== window.location.host) return;
+
+      if (url.hash && url.pathname === window.location.pathname && url.search === window.location.search) {
+        return;
+      }
+
       const next = toAppPath(url.pathname, url.search);
       if (!next) return;
       e.preventDefault();

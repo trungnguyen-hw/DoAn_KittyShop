@@ -12,13 +12,17 @@ import "../landing-page.css";
 
 const normalizeProduct = (product) => {
   if (!product) return {};
+  let rawImage = product.image || product.img || product.thumbnail || "/Sản Phẩm – Kidty Shop_files/pro-12_master.jpg";
+  if (rawImage && !rawImage.startsWith("http") && !rawImage.startsWith("https") && !rawImage.startsWith("/")) {
+    rawImage = "/" + rawImage;
+  }
   return {
     ...product,
     id: product.id || "ao-vest-be-trai-fm-v5",
     title: product.title || product.name || "Sản phẩm Kidty",
     price: Number(product.price) || 0,
     oldPrice: Number(product.oldPrice || product.old_price) || 0,
-    image: product.image || product.img || product.thumbnail || "/Sản Phẩm – Kidty Shop_files/pro-12_master.jpg",
+    image: rawImage,
   };
 };
 
