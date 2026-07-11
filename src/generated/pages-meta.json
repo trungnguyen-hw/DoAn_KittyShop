@@ -62,5 +62,21 @@
       "className": "mainContent-theme "
     },
     "paginate": false
+  },
+  {
+    "id": "cart",
+    "bodyClass": "cart",
+    "mainProps": {
+      "className": "mainContent-theme "
+    },
+    "paginate": false
+  },
+  {
+    "id": "checkout",
+    "bodyClass": "checkout",
+    "mainProps": {
+      "className": "mainContent-theme "
+    },
+    "paginate": false
   }
 ]

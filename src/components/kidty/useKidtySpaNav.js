@@ -12,6 +12,8 @@ function toAppPath(pathname, search) {
   if (pathname === "/products/dam-hoa-cong-chua-fm-45") {
     return `/products/dam-hoa-cong-chua-fm-45${search}`;
   }
+  if (pathname === "/cart") return `/cart${search}`;
+  if (pathname === "/checkout") return `/checkout${search}`;
   return null;
 }
 
@@ -19,7 +21,28 @@ export function useKidtySpaNav() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    window.reactNavigate = (path) => {
+      navigate(path);
+    };
+    return () => {
+      delete window.reactNavigate;
+    };
+  }, [navigate]);
+
+  useEffect(() => {
     const onClick = (e) => {
+      const adminLink = e.target.closest(".header-admin-link");
+      if (adminLink) {
+        e.preventDefault();
+        const isAdminLoggedIn = localStorage.getItem("adminAuth") === "true" || localStorage.getItem("adminToken");
+        if (isAdminLoggedIn) {
+          navigate("/admin/dashboard");
+        } else {
+          navigate("/admin/login");
+        }
+        return;
+      }
+
       const a = e.target.closest("a[href]");
       if (!a) return;
       let url;
@@ -28,7 +51,7 @@ export function useKidtySpaNav() {
       } catch {
         return;
       }
-      if (url.host !== HOST) return;
+      if (url.host !== HOST && url.host !== window.location.host) return;
       const next = toAppPath(url.pathname, url.search);
       if (!next) return;
       e.preventDefault();
@@ -38,3 +61,4 @@ export function useKidtySpaNav() {
     return () => document.removeEventListener("click", onClick, true);
   }, [navigate]);
 }
+

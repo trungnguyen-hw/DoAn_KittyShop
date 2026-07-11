@@ -32,10 +32,65 @@ const PAGE_SOURCES = [
     file: "Đầm Hoa Công Chúa FM-45 – Kidty Shop - Kiểu hiện thị 3.html",
     bodyClass: "product",
   },
+  {
+    id: "cart",
+    file: "Cart.html",
+    bodyClass: "cart",
+  },
+  {
+    id: "checkout",
+    file: "Checkout.html",
+    bodyClass: "checkout",
+  },
 ];
 
 function fixAssetPaths(html) {
-  return html.replace(/\.\/([^"']+?_files)\//g, "/$1/");
+  let next = html;
+  next = next.replace(/\.\/([^"']+?_files)\//g, "/$1/");
+  
+  // Replace ../theme.hstatic.net/ to /theme.hstatic.net/
+  next = next.replace(/\.\.\/theme\.hstatic\.net\//g, "/theme.hstatic.net/");
+  next = next.replace(/\.\.\/stats\.hstatic\.net\//g, "/stats.hstatic.net/");
+  next = next.replace(/\.\.\/file\.hstatic\.net\//g, "/file.hstatic.net/");
+  next = next.replace(/\.\.\/www\.google\.com\//g, "/www.google.com/");
+
+  // Replace kidty-shop.myharavan.com redirects and absolute links
+  next = next.replace(/(href|src|action)="https:\/\/kidty-shop\.myharavan\.com([^"]*)"/g, '$1="$2"');
+  next = next.replace(/(href|src|action)="http:\/\/kidty-shop\.myharavan\.com([^"]*)"/g, '$1="$2"');
+  next = next.replace(/(href|src|action)="\/\/kidty-shop\.myharavan\.com([^"]*)"/g, '$1="$2"');
+
+  // Replace double dot parent paths to SPA paths
+  next = next.replace(/\.\.\/\.\.\/San_Pham\/kidty-shop\.myharavan\.com\/collections\/all\.html/g, "/collections/all");
+  next = next.replace(/\.\.\/\.\.\/San_Pham\/kidty-shop\.myharavan\.com\/collections\/san-pham\.html/g, "/collections/san-pham");
+  next = next.replace(/\.\.\/\.\.\/Product_Views\/kidty-shop\.myharavan\.com\/products\/dam-hoa-cong-chua-fm-45\.html/g, "/products/dam-hoa-cong-chua-fm-45");
+  next = next.replace(/\.\.\/\.\.\/Blog\/kidty-shop\.myharavan\.com\/blogs\/news\.html/g, "/blogs/news");
+  next = next.replace(/\.\.\/\.\.\/Trang_Chu\/kidty-shop\.myharavan\.com\/index\.html/g, "/");
+  next = next.replace(/\.\.\/\.\.\/Trang_Chu\/kidty-shop\.myharavan\.com\/cart\.html/g, "/cart");
+
+  // Remove tags pointing to "/" which causes Vite build to crash with EISDIR (reading directory as file)
+  next = next.replace(/<link rel="dns-prefetch" href="\/">/gi, "");
+  next = next.replace(/<link rel="canonical" href="\/">/gi, "");
+  next = next.replace(/<link rel="alternate" href="\/"[^>]*>/gi, "");
+
+  // Change cart handle to directly redirect to local cart page
+  next = next.replace(/href="javascript:void\(0\);?"([^>]*id="site-cart-handle")/g, 'href="/cart"$1');
+  next = next.replace(/(id="site-cart-handle"[^>]*href)="javascript:void\(0\);?"/g, '$1="/cart"');
+
+  // Add inline onclick handler to guarantee navigation bypasses any jQuery/React event interception
+  next = next.replace(/id="site-cart-handle"/g, 'id="site-cart-handle" onclick="if(window.reactNavigate){window.reactNavigate(\'/cart\');}else{window.location.href=\'/cart\';} return false;"');
+
+  // Standardize existing admin link to use clean class and no href
+  next = next.replace(/<a[^>]*class="header-admin-link"[^>]*>Admin<\/a>/g, '<a class="header-admin-link">Admin</a>');
+
+  // Inject Admin link in header-wrap-icon if not already present
+  if (next.includes('class="header-wrap-icon"') && !next.includes('class="header-admin-link"')) {
+    next = next.replace(
+      /(<div class="header-wrap-icon">)/g,
+      `$1\n\t\t\t\t\t\t<a class="header-admin-link">Admin</a>`
+    );
+  }
+
+  return next;
 }
 
 function readSourceHtml(fileName) {
@@ -70,12 +125,25 @@ function extractBodyParts(html) {
   const m0 = body.indexOf("<main");
   const m1 = body.lastIndexOf("</main>");
   if (h0 < 0 || m0 < 0 || m1 < 0) throw new Error("Missing header/main in body");
-  const prelude = body.slice(bodyTagEnd, h0);
-  const header = body.slice(h0, m0);
+  
+  let prelude = body.slice(bodyTagEnd, h0);
+  let header = body.slice(h0, m0);
   const mainOpenEnd = body.indexOf(">", m0) + 1;
   const mainOpenTag = body.slice(m0, mainOpenEnd);
   const mainInner = body.slice(mainOpenEnd, m1);
-  const post = body.slice(m1 + 7);
+  let post = body.slice(m1 + 7);
+
+  // Clean prelude: remove open wrappers
+  prelude = prelude.replace(/<div class="main-body[^"]*">/gi, "");
+  prelude = prelude.replace(/<div class="mainHeader--height"[^>]*>/gi, "");
+
+  // Clean header: remove stray closing div at the end of header and wrap it cleanly
+  header = header.replace(/<\/div>\s*$/g, ""); // removes the closing div for mainHeader--height
+  header = `<div class="mainHeader--height" style="min-height: 147px;">${header}</div>`;
+
+  // Clean post: remove leading closing div for main-body
+  post = post.replace(/^\s*<\/div>/g, "");
+
   return { prelude, header, mainOpenTag, mainInner, post };
 }
 
@@ -132,7 +200,7 @@ function splitTatCaMainInner(mainInner) {
     throw new Error("Could not split tat-ca main inner for pagination demo");
   }
   const before = mainInner.slice(0, i0);
-  const listInner = mainInner.slice(i0 + marker.length, i1);
+  const listInner = mainInner.slice(i0, i1);
   const after = mainInner.slice(i1);
   return { before, listInner, after };
 }

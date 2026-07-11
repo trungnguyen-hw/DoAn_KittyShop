@@ -1,0 +1,252 @@
+
+				<div class="layoutPage-cart" id="layout-cart">
+	<div class="breadcrumb-shop">
+		<div class="container-fluid">
+			<div class="row"><div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 pd5  ">
+	<ol class="breadcrumb breadcrumb-arrows" itemscope itemtype="http://schema.org/BreadcrumbList">
+		<li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+			<a href="index.html" target="_self" itemprop="item"><span itemprop="name">Trang chủ</span></a>
+			<meta itemprop="position" content="1" />		
+		</li>
+		
+		<li class="active" itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem" >
+			<span itemprop="item" content="cart.html"><span itemprop="name">Giỏ hàng (0)</span></span>
+			<meta itemprop="position" content="2" />
+		</li>
+		
+	</ol>
+</div>	</div>
+		</div>
+	</div>
+	<div class="wrapper-cart-detail">
+		<div class="container-fluid">
+			<div class="heading-page">
+				<div class="header-page">
+					<h1>Giỏ hàng của bạn</h1>
+					<p class="count-cart">Có <span>0 sản phẩm</span> trong giỏ hàng</p>
+				</div>
+			</div>
+			<div class="row wrapbox-content-cart" >
+				<div class="col-md-8 col-sm-8 col-xs-12 contentCart-detail">
+							
+					<div class="cart-container">
+						<div class="expanded-message">			
+							<p class="cart-empty">Giỏ hàng của bạn đang trống</p>
+						</div>
+					</div>						
+					
+					<!-- End cart -->
+				</div>
+				<div class="col-md-4 col-sm-4 col-xs-12 sidebarCart-sticky">
+					<div class="sidebox-order">
+						<div class="sidebox-order-inner">
+							<div class="sidebox-order_title">
+								<h3>Thông tin đơn hàng</h3>
+							</div>
+							<div class="sidebox-order_total">
+								<p>Tổng tiền:
+									<span class="total-price">0₫</span>
+								</p>
+							</div>
+							<div class="sidebox-order_text">
+								<p>Phí vận chuyển sẽ được tính ở trang thanh toán.<br> 
+									Bạn cũng có thể nhập mã giảm giá ở trang thanh toán.</p>
+							</div>
+							<div class="sidebox-order_action">
+								<a class="button dark btncart-checkout">THANH TOÁN</a>
+								<p class="link-continue text-center">
+									<a  href="/collections/all">
+										<i class="fa fa-reply"></i> Tiếp tục mua hàng
+									</a>
+								</p>
+							</div>
+						</div>
+					</div>
+					
+				</div>			
+			</div>
+		</div>
+	</div>
+</div> 
+<script>
+function log(args) {
+	var str = "";
+	for (var i = 0; i < arguments.length; i++) {
+		if (typeof arguments[i] === "object") {
+			str += JSON.stringify(arguments[i]);
+		} else {
+			str += arguments[i];
+		}
+	}
+	return str;
+}
+function addCommas(str) {
+	var parts = (str + "").split("."),
+			main = parts[0],
+			len = main.length,
+			output = "",
+			i = len - 1;
+
+	while(i >= 0) {
+		output = main.charAt(i) + output;
+		if ((len - i) % 3 === 0 && i > 0) {
+			output = "," + output;
+		}
+		--i;
+	}
+	// put decimal part back
+	if (parts.length > 1) {
+		output += "," + parts[1];
+	}
+	return output;
+}
+;(function ( $, window, document, undefined ) {
+	var pluginName = 'hrvAJAXCart',
+			defaults = {
+				propertyName: "value"
+			};
+	function Plugin( element, options ) {
+		this.element = element;
+		this.options = $.extend( {}, defaults, options );
+		this._defaults = defaults;
+		this._name = 'hrvAJAXCart';
+		this.init();
+	}
+	Plugin.prototype = {
+		init: function() {
+			var item = this.options.item,
+					item_total = this.options.item_total,
+					item_qty = this.options.item_qty,
+					subtotal = $(this.options.subtotal);
+
+			// Change line item quantity
+			$(item_qty).change(function() {
+				var qty = $(this).val(),
+						this_item = $(this).closest(item),
+						variant_id = this_item.data('variant-id'),
+						this_item_total = this_item.find(item_total);
+				$.ajax({
+					type: 'POST',
+					url: '/cart/change.js',
+					dataType: 'json',
+					data: {
+						quantity: qty,
+						id: variant_id
+					},
+					success: function(cart) {
+						if ( qty == 0 ) {
+							this_item.remove();
+						} else {
+							$.each(cart.items,function(index,row) {
+								var price = parseFloat(row.line_price / 100).toFixed(2);
+								var currency = Number(price.replace(/[^0-9\.-]+/g,""));
+								if ( variant_id == row.variant_id ) this_item_total.html( log(addCommas(currency)) + ' đ' );
+							});
+						}
+						var sub_price = parseFloat(cart.total_price / 100).toFixed(2);
+						sub_price = Number(sub_price.replace(/[^0-9\.-]+/g,""));
+						subtotal.html( log(addCommas(sub_price)) + ' đ' );
+					},
+					error: function(response) {
+						alert(response);
+					}
+				});
+			});
+
+			// Remove line item
+			$(this.options.item_remove).click(function(e) {
+				e.preventDefault();
+				$(this).closest(item).find(item_qty).val(0);
+				$(this).closest(item).find(item_qty).trigger('change');
+			});
+		}
+	};
+	$.fn.hrvAJAXCart = function ( options ) {
+		return this.each(function () {
+			if (!$.data(this, "plugin_" + pluginName)) {
+				$.data(this, "plugin_" + pluginName, new Plugin( this, options ));
+			}
+		});
+	};
+})( jQuery, window, document );
+/* Social */
+$(document).ready(function(){
+	var href = window.location.href;
+	if (href.indexOf("?add=") != -1){
+		var splitHref = href.split("?add=")[1];
+		var variantId = parseInt($.trim(splitHref.split("&ref=")[0]));
+		$.ajax({
+			url: "/cart/" + variantId + ":1",
+			success: function(data){
+				window.location = 'cart.html';
+			}
+		});
+	}
+	$('.btncart-checkout').click(function(e){
+		e.preventDefault();
+		$('button[name="checkout"]').trigger('click');
+	});
+
+});
+/*==== END SOCIAL ==========================================*/
+</script>
+<script>
+	 function unPromote(tmp){
+		 var self = this;
+		 tmp += "&note="+$('#note').val();
+		 $.post('/cart', tmp).always(function() {
+			 setTimeout(function() { location.reload(); }, 500);
+		 });
+	 }
+		//debugger;
+		console.log("");
+
+		 $(document).on('click', '.qty-click .qtyplus', function(e){
+			 e.preventDefault();
+			 var input = $(this).parent('.quantity-partent').find('input');
+			 var currentVal = parseInt(input.val());
+			 if (!isNaN(currentVal)) {
+				 input.val(currentVal + 1);
+			 } else {
+				 input.val(1);
+			 }
+			 Update_price_change();
+		 });
+			$(document).on('click', ".qty-click .qtyminus", function(e) {
+				e.preventDefault();
+				var input = $(this).parent('.quantity-partent').find('input');
+				var currentVal = parseInt(input.val());
+				if (!isNaN(currentVal) && currentVal > 1) {
+					input.val(currentVal - 1);
+				} else {
+					input.val(1);
+				}
+				Update_price_change();
+			});
+			function Update_price_change(){
+				var params = {
+					type: 'POST',
+					url: '/cart/update.js',
+					data: $('#cartformpage').serialize(),
+					async: false,
+					dataType: 'json',
+					success: function(data) { 
+						$.each(data.items,function(i,v){
+							$('.table-cart tbody tr[data-variant-id="'+v.variant_id+'"] .line-item-total').html(Haravan.formatMoney(v.line_price, "{{amount}}₫"));
+						});
+						$('.sidebox-order_total .total-price').html(Haravan.formatMoney(data.total_price, "{{amount}}₫"));
+						$('.count-cart').html('Có ' + '<span>' + data.item_count + ' sản phẩm </span>' + 'trong giỏ hàng');
+						$('.icon-cart .count').html(data.item_count);
+					},
+					error: function(XMLHttpRequest, textStatus) {
+						Haravan.onError(XMLHttpRequest, textStatus);
+					}
+				};
+				jQuery.ajax(params);
+			}
+			</script>
+
+
+
+
+			

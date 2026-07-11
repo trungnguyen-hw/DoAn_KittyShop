@@ -1,0 +1,284 @@
+
+				<div class="layoutPage-cart" id="layout-cart">
+	<div class="breadcrumb-shop">
+		<div class="container-fluid">
+			<div class="row"><div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 pd5  ">
+	<ol class="breadcrumb breadcrumb-arrows" itemscope itemtype="http://schema.org/BreadcrumbList">
+		<li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+			<a href="index.html" target="_self" itemprop="item"><span itemprop="name">Trang chủ</span></a>
+			<meta itemprop="position" content="1" />		
+		</li>
+		
+		<li class="active" itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem" >
+			<span itemprop="item" content="cart.html"><span itemprop="name">Giỏ hàng (0)</span></span>
+			<meta itemprop="position" content="2" />
+		</li>
+		
+	</ol>
+</div>	</div>
+		</div>
+	</div>
+	<div class="wrapper-cart-detail">
+		<div class="container-fluid">
+			<div class="heading-page">
+				<div class="header-page">
+					<h1>Giỏ hàng của bạn</h1>
+					<p class="count-cart">Có <span>0 sản phẩm</span> trong giỏ hàng</p>
+				</div>
+			</div>
+			<div class="row wrapbox-content-cart" style="padding: 20px 0;">
+    <div class="col-md-8 col-sm-8 col-xs-12">
+      <div class="cart-container" style="background: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 20px;">
+        <h2 style="margin-top: 0; margin-bottom: 20px; font-weight: bold; font-size: 1.6em; border-bottom: 2px solid #eee; padding-bottom: 10px; color: #333;">Thông tin giao hàng</h2>
+        <form id="checkout-form">
+          <div class="form-group" style="margin-bottom: 18px;">
+            <label for="billingName" style="display: block; margin-bottom: 8px; font-weight: bold; color: #555;">Họ và tên *</label>
+            <input type="text" id="billingName" required style="width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 1em;" placeholder="Nguyễn Văn A">
+          </div>
+          <div class="form-group" style="margin-bottom: 18px;">
+            <label for="billingPhone" style="display: block; margin-bottom: 8px; font-weight: bold; color: #555;">Số điện thoại *</label>
+            <input type="tel" id="billingPhone" required style="width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 1em;" placeholder="0901234567">
+          </div>
+          <div class="form-group" style="margin-bottom: 18px;">
+            <label for="billingAddress" style="display: block; margin-bottom: 8px; font-weight: bold; color: #555;">Địa chỉ nhận hàng *</label>
+            <input type="text" id="billingAddress" required style="width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 1em;" placeholder="Số 123, Đường ABC, Phường X, Quận Y">
+          </div>
+          <div class="form-group" style="margin-bottom: 18px;">
+            <label for="paymentMethod" style="display: block; margin-bottom: 8px; font-weight: bold; color: #555;">Phương thức thanh toán *</label>
+            <select id="paymentMethod" required style="width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 4px; background: white; box-sizing: border-box; font-size: 1em;">
+              <option value="cod">Thanh toán khi nhận hàng (COD)</option>
+              <option value="bank">Chuyển khoản ngân hàng</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin-bottom: 18px;">
+            <label for="orderNote" style="display: block; margin-bottom: 8px; font-weight: bold; color: #555;">Ghi chú (Tùy chọn)</label>
+            <textarea id="orderNote" style="width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 4px; height: 90px; box-sizing: border-box; font-size: 1em;" placeholder="Ghi chú về đơn hàng của bạn..."></textarea>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="col-md-4 col-sm-4 col-xs-12">
+      <div class="sidebox-order" style="background: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+        <div class="sidebox-order-inner">
+          <div class="sidebox-order_title" style="border-bottom: 1px solid #eee; padding-bottom: 12px; margin-bottom: 15px;">
+            <h3 style="margin: 0; font-size: 1.3em; font-weight: bold; color: #333;">TÓM TẮT ĐƠN HÀNG</h3>
+          </div>
+          <div class="sidebox-order_total" style="padding: 10px 0;">
+            <p style="display: flex; justify-content: space-between; font-size: 1.1em; color: #666; margin: 8px 0;">
+              <span>Tạm tính:</span>
+              <span class="checkout-subtotal">350,000₫</span>
+            </p>
+            <p style="display: flex; justify-content: space-between; font-size: 1.1em; color: #666; margin: 8px 0;">
+              <span>Giao hàng:</span>
+              <span style="color: #27ae60; font-weight: bold;">Miễn phí</span>
+            </p>
+            <div style="border-top: 1px solid #eee; margin-top: 15px; padding-top: 15px;">
+              <p style="display: flex; justify-content: space-between; font-size: 1.3em; font-weight: bold; margin: 0;">
+                <span>Tổng cộng:</span>
+                <span class="checkout-total-price" style="color: #f53d2d;">350,000₫</span>
+              </p>
+            </div>
+          </div>
+          <div class="sidebox-order_action" style="margin-top: 25px;">
+            <button type="submit" form="checkout-form" class="button dark" style="width: 100%; padding: 14px; font-size: 1.1em; font-weight: bold; background: #f53d2d; color: white; border: none; border-radius: 4px; cursor: pointer; text-transform: uppercase; transition: background 0.2s;">Đặt hàng ngay</button>
+            <p style="text-align: center; margin-top: 15px; margin-bottom: 0;">
+              <a href="/" style="color: #0066cc; text-decoration: none;"><i class="fa fa-reply" style="margin-right: 5px;"></i> Tiếp tục mua sắm</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script type="text/javascript">
+  document.getElementById('checkout-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    alert('Đặt hàng thành công! Cảm ơn bạn đã mua hàng tại Kidty Shop.');
+    window.location.href = '/';
+  });
+  </script>
+		</div>
+	</div>
+</div> 
+<script>
+function log(args) {
+	var str = "";
+	for (var i = 0; i < arguments.length; i++) {
+		if (typeof arguments[i] === "object") {
+			str += JSON.stringify(arguments[i]);
+		} else {
+			str += arguments[i];
+		}
+	}
+	return str;
+}
+function addCommas(str) {
+	var parts = (str + "").split("."),
+			main = parts[0],
+			len = main.length,
+			output = "",
+			i = len - 1;
+
+	while(i >= 0) {
+		output = main.charAt(i) + output;
+		if ((len - i) % 3 === 0 && i > 0) {
+			output = "," + output;
+		}
+		--i;
+	}
+	// put decimal part back
+	if (parts.length > 1) {
+		output += "," + parts[1];
+	}
+	return output;
+}
+;(function ( $, window, document, undefined ) {
+	var pluginName = 'hrvAJAXCart',
+			defaults = {
+				propertyName: "value"
+			};
+	function Plugin( element, options ) {
+		this.element = element;
+		this.options = $.extend( {}, defaults, options );
+		this._defaults = defaults;
+		this._name = 'hrvAJAXCart';
+		this.init();
+	}
+	Plugin.prototype = {
+		init: function() {
+			var item = this.options.item,
+					item_total = this.options.item_total,
+					item_qty = this.options.item_qty,
+					subtotal = $(this.options.subtotal);
+
+			// Change line item quantity
+			$(item_qty).change(function() {
+				var qty = $(this).val(),
+						this_item = $(this).closest(item),
+						variant_id = this_item.data('variant-id'),
+						this_item_total = this_item.find(item_total);
+				$.ajax({
+					type: 'POST',
+					url: '/cart/change.js',
+					dataType: 'json',
+					data: {
+						quantity: qty,
+						id: variant_id
+					},
+					success: function(cart) {
+						if ( qty == 0 ) {
+							this_item.remove();
+						} else {
+							$.each(cart.items,function(index,row) {
+								var price = parseFloat(row.line_price / 100).toFixed(2);
+								var currency = Number(price.replace(/[^0-9\.-]+/g,""));
+								if ( variant_id == row.variant_id ) this_item_total.html( log(addCommas(currency)) + ' đ' );
+							});
+						}
+						var sub_price = parseFloat(cart.total_price / 100).toFixed(2);
+						sub_price = Number(sub_price.replace(/[^0-9\.-]+/g,""));
+						subtotal.html( log(addCommas(sub_price)) + ' đ' );
+					},
+					error: function(response) {
+						alert(response);
+					}
+				});
+			});
+
+			// Remove line item
+			$(this.options.item_remove).click(function(e) {
+				e.preventDefault();
+				$(this).closest(item).find(item_qty).val(0);
+				$(this).closest(item).find(item_qty).trigger('change');
+			});
+		}
+	};
+	$.fn.hrvAJAXCart = function ( options ) {
+		return this.each(function () {
+			if (!$.data(this, "plugin_" + pluginName)) {
+				$.data(this, "plugin_" + pluginName, new Plugin( this, options ));
+			}
+		});
+	};
+})( jQuery, window, document );
+/* Social */
+$(document).ready(function(){
+	var href = window.location.href;
+	if (href.indexOf("?add=") != -1){
+		var splitHref = href.split("?add=")[1];
+		var variantId = parseInt($.trim(splitHref.split("&ref=")[0]));
+		$.ajax({
+			url: "/cart/" + variantId + ":1",
+			success: function(data){
+				window.location = 'cart.html';
+			}
+		});
+	}
+	$('.btncart-checkout').click(function(e){
+		e.preventDefault();
+		$('button[name="checkout"]').trigger('click');
+	});
+
+});
+/*==== END SOCIAL ==========================================*/
+</script>
+<script>
+	 function unPromote(tmp){
+		 var self = this;
+		 tmp += "&note="+$('#note').val();
+		 $.post('/cart', tmp).always(function() {
+			 setTimeout(function() { location.reload(); }, 500);
+		 });
+	 }
+		//debugger;
+		console.log("");
+
+		 $(document).on('click', '.qty-click .qtyplus', function(e){
+			 e.preventDefault();
+			 var input = $(this).parent('.quantity-partent').find('input');
+			 var currentVal = parseInt(input.val());
+			 if (!isNaN(currentVal)) {
+				 input.val(currentVal + 1);
+			 } else {
+				 input.val(1);
+			 }
+			 Update_price_change();
+		 });
+			$(document).on('click', ".qty-click .qtyminus", function(e) {
+				e.preventDefault();
+				var input = $(this).parent('.quantity-partent').find('input');
+				var currentVal = parseInt(input.val());
+				if (!isNaN(currentVal) && currentVal > 1) {
+					input.val(currentVal - 1);
+				} else {
+					input.val(1);
+				}
+				Update_price_change();
+			});
+			function Update_price_change(){
+				var params = {
+					type: 'POST',
+					url: '/cart/update.js',
+					data: $('#cartformpage').serialize(),
+					async: false,
+					dataType: 'json',
+					success: function(data) { 
+						$.each(data.items,function(i,v){
+							$('.table-cart tbody tr[data-variant-id="'+v.variant_id+'"] .line-item-total').html(Haravan.formatMoney(v.line_price, "{{amount}}₫"));
+						});
+						$('.sidebox-order_total .total-price').html(Haravan.formatMoney(data.total_price, "{{amount}}₫"));
+						$('.count-cart').html('Có ' + '<span>' + data.item_count + ' sản phẩm </span>' + 'trong giỏ hàng');
+						$('.icon-cart .count').html(data.item_count);
+					},
+					error: function(XMLHttpRequest, textStatus) {
+						Haravan.onError(XMLHttpRequest, textStatus);
+					}
+				};
+				jQuery.ajax(params);
+			}
+			</script>
+
+
+
+
+			

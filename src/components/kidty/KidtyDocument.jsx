@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useKidtyCartBridge } from "./useKidtyCartBridge.js";
 import { useKidtyLegacyScripts } from "./useKidtyLegacyScripts.js";
 import { useKidtyScrollLockGuard } from "./useKidtyScrollLockGuard.js";
@@ -15,6 +16,11 @@ export function KidtyDocument({
   useKidtyScrollLockGuard();
   useKidtySpaNav();
   useKidtyCartBridge();
+
+  useEffect(() => {
+    document.body.className = bodyClass || "";
+    document.body.removeAttribute("id");
+  }, [bodyClass]);
 
   return (
     <div id="kidty-theme" className={bodyClass}>

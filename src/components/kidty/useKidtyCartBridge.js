@@ -5,10 +5,12 @@ export function useKidtyCartBridge() {
   const { count, addToCart } = useCart();
 
   useEffect(() => {
-    const el = document.querySelector(
-      "#site-cart-handle .count, .header-action_cart .count",
+    const elements = document.querySelectorAll(
+      "#site-cart-handle .count, .header-action_cart .count"
     );
-    if (el) el.textContent = String(count);
+    elements.forEach(el => {
+      el.textContent = String(count);
+    });
   }, [count]);
 
   useEffect(() => {
