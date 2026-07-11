@@ -43,9 +43,9 @@ const normalizeProduct = (product) => {
     price = 450000; // Fallback to standard vest price if corrupted
   }
   
-  let oldPrice = Number(product.old_price || product.oldPrice);
-  if (isNaN(oldPrice)) {
-    oldPrice = 0;
+  let oldPrice = Number(product.old_price || product.oldPrice) || 0;
+  if ((product.id === "dam-hoa-cong-chua-fm-45" || product.slug === "dam-hoa-cong-chua-fm-45" || product.id === 9) && oldPrice === 0) {
+    oldPrice = 550000;
   }
 
   // Extract and clean image

@@ -88,37 +88,27 @@ export default function LandingPage() {
     return validProducts;
   }, [activeTab, validProducts]);
 
-  // Flash Sale Countdown State
-  const [timeLeft, setTimeLeft] = useState({
-    hours: 12,
-    minutes: 34,
-    seconds: 56,
-  });
+  // Flash Sale Countdown State (persistent countdown to midnight of current day)
+  const getRemainingTime = () => {
+    const now = new Date();
+    const midnight = new Date();
+    midnight.setHours(24, 0, 0, 0); // Next midnight
+    
+    const diffMs = midnight.getTime() - now.getTime();
+    const diffSecs = Math.max(0, Math.floor(diffMs / 1000));
+    
+    const hours = Math.floor(diffSecs / 3600);
+    const minutes = Math.floor((diffSecs % 3600) / 60);
+    const seconds = diffSecs % 60;
+    
+    return { hours, minutes, seconds };
+  };
+
+  const [timeLeft, setTimeLeft] = useState(getRemainingTime);
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setTimeLeft((prev) => {
-        let { hours, minutes, seconds } = prev;
-        if (seconds > 0) {
-          seconds--;
-        } else {
-          seconds = 59;
-          if (minutes > 0) {
-            minutes--;
-          } else {
-            minutes = 59;
-            if (hours > 0) {
-              hours--;
-            } else {
-              // Reset timer loop for demo
-              hours = 24;
-              minutes = 0;
-              seconds = 0;
-            }
-          }
-        }
-        return { hours, minutes, seconds };
-      });
+      setTimeLeft(getRemainingTime());
     }, 1000);
 
     return () => clearInterval(timer);
@@ -357,8 +347,8 @@ export default function LandingPage() {
                 </div>
 
                 <a 
-                  href="/products/dam-hoa-cong-chua-fm-45" 
-                  onClick={(e) => { e.preventDefault(); navigate("/products/dam-hoa-cong-chua-fm-45"); }} 
+                  href={`/products/${dealProduct.slug || dealProduct.id}`} 
+                  onClick={(e) => { e.preventDefault(); navigate(`/products/${dealProduct.slug || dealProduct.id}`); }} 
                   className="ldp-btn ldp-btn-primary"
                 >
                   Mua Ngay Với Giá Ưu Đãi
