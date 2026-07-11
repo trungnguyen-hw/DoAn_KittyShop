@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useMemo, useState, useEffect } from "react";
 import { cartService } from "../services/cartService.js";
+import { productService, getProductImage } from "../services/productService.js";
 import { useToast } from "./ToastContext.jsx";
 
 /* eslint-disable react-refresh/only-export-components -- hook colocated with provider for this demo store */
@@ -33,7 +34,12 @@ export function CartProvider({ children }) {
       try {
         const titleEl = document.querySelector(".product-title h1, h1");
         const priceEl = document.querySelector(".product-price span, .price-now, .pro-price");
-        const imgEl = document.querySelector("#product-featured-image, .product-image-feature, img");
+        const imgEl = document.querySelector("#product-featured-image") || 
+                      document.querySelector(".product-image-feature") || 
+                      document.querySelector(".product-gallery img") || 
+                      document.querySelector(".product-image img") || 
+                      document.querySelector("main img") || 
+                      document.querySelector("#main img");
         
         const title = titleEl ? titleEl.textContent.trim() : "Đầm Hoa Công Chúa FM-45";
         let price = 389000;
@@ -44,8 +50,13 @@ export function CartProvider({ children }) {
         
         let image = "/Đầm Hoa Công Chúa FM-45 – Kidty Shop - KIểu hiển thị 1_files/pro-16_master.jpg";
         if (imgEl) {
-          const src = imgEl.getAttribute("src");
-          if (src) image = src;
+          let src = imgEl.getAttribute("src");
+          if (src) {
+            if (src.startsWith("//")) {
+              src = "https:" + src;
+            }
+            image = src;
+          }
         }
 
         const qtyEl = document.querySelector("#quantity, .quantity-selector");
@@ -64,11 +75,21 @@ export function CartProvider({ children }) {
           id = path.split("/").pop();
         }
 
+        // Robust fallback: if parsed image path is a webpage or invalid, try to look up the correct image from productService
+        if (!image || image.includes("?view=") || image.includes("/products/")) {
+          const localProd = productService.getProductById(id);
+          if (localProd && localProd.image) {
+            image = localProd.image;
+          } else {
+            image = "/Đầm Hoa Công Chúa FM-45 – Kidty Shop - KIểu hiển thị 1_files/pro-16_master.jpg"; // default fallback
+          }
+        }
+
         prod = {
           id,
           title,
           price,
-          image,
+          image: getProductImage(image),
           quantity,
           variant: variantStr || "Hồng / 100"
         };
@@ -78,11 +99,16 @@ export function CartProvider({ children }) {
           id: "dam-hoa-cong-chua-fm-45",
           title: "Đầm Hoa Công Chúa FM-45",
           price: 389000,
-          image: "/Đầm Hoa Công Chúa FM-45 – Kidty Shop - KIểu hiển thị 1_files/pro-16_master.jpg",
+          image: getProductImage("/Đầm Hoa Công Chúa FM-45 – Kidty Shop - KIểu hiển thị 1_files/pro-16_master.jpg"),
           quantity: 1,
           variant: "Hồng / 100"
         };
       }
+    } else {
+      prod = {
+        ...prod,
+        image: getProductImage(prod)
+      };
     }
 
     setCartItems((prev) => {

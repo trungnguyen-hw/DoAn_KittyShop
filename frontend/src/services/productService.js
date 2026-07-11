@@ -197,3 +197,50 @@ export const productService = {
     return true;
   }
 };
+
+export function getProductImage(product) {
+  if (typeof product === "string") {
+    const value = product.trim();
+    if (!value || value.includes("?view=") || value.includes("/products/")) {
+      return "/Sản Phẩm – Kidty Shop_files/pro-12_master.jpg";
+    }
+    if (
+      value.startsWith("http://") ||
+      value.startsWith("https://") ||
+      value.startsWith("data:") ||
+      value.startsWith("blob:")
+    ) {
+      return value;
+    }
+    return value.startsWith("/") ? value : `/${value}`;
+  }
+
+  const value =
+    product?.image ||
+    product?.image_url ||
+    product?.thumbnail ||
+    product?.img ||
+    product?.images?.[0];
+
+  if (!value || (typeof value === "string" && (value.includes("?view=") || value.includes("/products/")))) {
+    // If the value itself is a webpage or invalid, try lookup by id if present
+    if (product?.id) {
+      const localProd = productService.getProductById(product.id);
+      if (localProd && localProd.image && !localProd.image.includes("?view=") && !localProd.image.includes("/products/")) {
+        return getProductImage(localProd.image);
+      }
+    }
+    return "/Sản Phẩm – Kidty Shop_files/pro-12_master.jpg";
+  }
+
+  if (
+    value.startsWith("http://") ||
+    value.startsWith("https://") ||
+    value.startsWith("data:") ||
+    value.startsWith("blob:")
+  ) {
+    return value;
+  }
+  return value.startsWith("/") ? value : `/${value}`;
+}
+

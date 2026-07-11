@@ -1,9 +1,29 @@
+import { getProductImage } from "./productService.js";
+
 // TODO: Replace with real API calls to backend in the future
 export const cartService = {
   getCart() {
     try {
       const data = localStorage.getItem("kidty-cart");
-      return data ? JSON.parse(data) : [];
+      if (!data) return [];
+      const items = JSON.parse(data);
+      if (Array.isArray(items)) {
+        let hasChanges = false;
+        const migrated = items.map(item => {
+          const normalizedImg = getProductImage(item);
+          if (item.image !== normalizedImg) {
+            hasChanges = true;
+            return { ...item, image: normalizedImg };
+          }
+          return item;
+        });
+        if (hasChanges) {
+          this.saveCart(migrated);
+          return migrated;
+        }
+        return items;
+      }
+      return [];
     } catch (e) {
       console.error("Error reading cart from localStorage", e);
       return [];

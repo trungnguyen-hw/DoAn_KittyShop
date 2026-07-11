@@ -1,5 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, useCallback, useEffect } from "react";
+import { getProductImage } from "../services/productService.js";
 import "../toast.css";
 
 const ToastContext = createContext(null);
@@ -84,6 +85,8 @@ function ToastCard({ toast, onClose }) {
     onClose();
   };
 
+  const imageUrl = toast.product ? getProductImage(toast.product) : "";
+
   return (
     <div className={`kidty-toast-card ${toast.type} ${isExiting ? "exit" : "enter"}`}>
       <div className="kidty-toast-body">
@@ -105,7 +108,7 @@ function ToastCard({ toast, onClose }) {
 
       {toast.product && (
         <div className="kidty-toast-product">
-          <img src={toast.product.image} className="kidty-toast-product-img" alt="" />
+          <img src={imageUrl} className="kidty-toast-product-img" alt="" />
           <div className="kidty-toast-product-info">
             <h5 className="kidty-toast-product-name">{toast.product.title}</h5>
             <p className="kidty-toast-product-qty">

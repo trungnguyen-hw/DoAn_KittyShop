@@ -1,6 +1,7 @@
 
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext.jsx";
+import { getProductImage } from "../services/productService.js";
 import prelude from "../generated/cart-prelude.html?raw";
 import header from "../generated/cart-header.html?raw";
 import postHtml from "../generated/cart-post.html?raw";
@@ -67,21 +68,24 @@ export default function CartPage() {
                       <form id="cartformpage">
                         <table className="table-cart">
                           <tbody>
-                            {cartItems.map((item) => (
-                              <tr key={item.key} className="line-item-container" data-variant-id={item.key}>
-                                <td className="image">
-                                  <img src={item.image} alt={item.title} />
-                                </td>
-                                <td className="item">
-                                  <h3>
-                                    {/* Link to product detail page locally */}
-                                    <Link to={`/products/${item.id}`}>{item.title}</Link>
-                                  </h3>
-                                  {item.variant && <p className="variant">{item.variant}</p>}
-                                  <p className="price">
-                                    <span className="pri">{item.price.toLocaleString("vi-VN")}₫</span>
-                                  </p>
-                                  <div className="quantity-area clearfix">
+                            {cartItems.map((item) => {
+                              const imageUrl = getProductImage(item);
+
+                              return (
+                                <tr key={item.key} className="line-item-container" data-variant-id={item.key}>
+                                  <td className="image">
+                                    <img src={imageUrl} alt={item.title} />
+                                  </td>
+                                  <td className="item">
+                                    <h3>
+                                      {/* Link to product detail page locally */}
+                                      <Link to={`/products/${item.id}`}>{item.title}</Link>
+                                    </h3>
+                                    {item.variant && <p className="variant">{item.variant}</p>}
+                                    <p className="price">
+                                      <span className="pri">{item.price.toLocaleString("vi-VN")}₫</span>
+                                    </p>
+                                    <div className="quantity-area clearfix">
                                     <input
                                       type="button"
                                       value="-"
@@ -115,7 +119,8 @@ export default function CartPage() {
                                   </a>
                                 </td>
                               </tr>
-                            ))}
+                            );
+                            })}
                           </tbody>
                         </table>
                       </form>
