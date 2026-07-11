@@ -24,7 +24,7 @@ const normalizeProduct = (product) => {
 
 export default function LandingPage() {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState("new");
+  const [activeTab, setActiveTab] = useState("all");
   const [products, setProducts] = useState(() =>
     productService.getProducts().map(normalizeProduct)
   );
@@ -62,7 +62,9 @@ export default function LandingPage() {
 
   // Tab Filtering
   const tabProducts = useMemo(() => {
-    if (activeTab === "new") {
+    if (activeTab === "all") {
+      return validProducts;
+    } else if (activeTab === "new") {
       // Get last 4 products
       return validProducts.slice(-4).reverse();
     } else if (activeTab === "bestseller") {
@@ -73,7 +75,7 @@ export default function LandingPage() {
       const saleItems = validProducts.filter(p => p.oldPrice > p.price);
       return saleItems.length > 0 ? saleItems.slice(0, 4) : validProducts.slice(2, 6);
     }
-    return validProducts.slice(0, 4);
+    return validProducts;
   }, [activeTab, validProducts]);
 
   // Flash Sale Countdown State
@@ -228,18 +230,28 @@ export default function LandingPage() {
           </div>
           <div className="ldp-tabs">
             <button 
+              type="button"
+              className={`ldp-tab-btn ${activeTab === "all" ? "active" : ""}`}
+              onClick={() => setActiveTab("all")}
+            >
+              🌸 Toàn bộ
+            </button>
+            <button 
+              type="button"
               className={`ldp-tab-btn ${activeTab === "new" ? "active" : ""}`}
               onClick={() => setActiveTab("new")}
             >
               🆕 Sản Phẩm Mới
             </button>
             <button 
+              type="button"
               className={`ldp-tab-btn ${activeTab === "bestseller" ? "active" : ""}`}
               onClick={() => setActiveTab("bestseller")}
             >
               🔥 Bán Chạy Nhất
             </button>
             <button 
+              type="button"
               className={`ldp-tab-btn ${activeTab === "sale" ? "active" : ""}`}
               onClick={() => setActiveTab("sale")}
             >
