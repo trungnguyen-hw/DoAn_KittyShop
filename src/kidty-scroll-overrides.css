@@ -140,6 +140,11 @@
   font-weight: normal !important;
 }
 
+/* For custom products (which only have a single image), hide the duplicate thumbnails to avoid repetition */
+.product-custom .product-gallery__thumb:not(:first-child) {
+  display: none !important;
+}
+
 /* Mobile responsive details page overrides */
 @media (max-width: 991px) {
   /* Hide the buggy mobile static jQuery slider and duplicate action bar */

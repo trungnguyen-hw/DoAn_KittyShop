@@ -262,7 +262,7 @@ export default function DamFm45Page() {
 
   return (
     <KidtyDocument
-      bodyClass="product"
+      bodyClass={`product ${isFm45 ? "product-fm45" : "product-custom"}`}
       prelude={b.prelude}
       header={b.header}
       postHtml={b.postHtml}
