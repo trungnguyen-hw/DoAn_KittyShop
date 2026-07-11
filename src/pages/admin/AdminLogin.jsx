@@ -36,7 +36,7 @@ export default function AdminLogin() {
         await request("/health");
       } catch (healthErr) {
         console.error("Health check failed:", healthErr);
-        const connErrorMsg = "Không kết nối được máy chủ. Vui lòng kiểm tra backend localhost:5000.";
+        const connErrorMsg = "Không kết nối được máy chủ. Vui lòng kiểm tra lại dịch vụ Backend.";
         setErrorMsg(connErrorMsg);
         if (window.showToast) {
           window.showToast(connErrorMsg, "error", "Lỗi kết nối");
