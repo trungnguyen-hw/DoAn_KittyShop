@@ -111,7 +111,17 @@ export default function CartPage() {
                                     href="#"
                                     onClick={(e) => {
                                       e.preventDefault();
-                                      removeFromCart(item.key);
+                                      const row = e.currentTarget.closest(".line-item-container");
+                                      if (row) {
+                                        row.classList.add("row-removing");
+                                        const onEnd = () => {
+                                          removeFromCart(item.key);
+                                          row.removeEventListener("animationend", onEnd);
+                                        };
+                                        row.addEventListener("animationend", onEnd);
+                                      } else {
+                                        removeFromCart(item.key);
+                                      }
                                     }}
                                     className="cart-remove"
                                   >
