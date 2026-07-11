@@ -1,5 +1,6 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useLayoutEffect } from "react";
 import { useSearchParams, useParams, useNavigate } from "react-router-dom";
+import { createPortal } from "react-dom";
 import prelude1 from "../generated/dam-style-1-prelude.html?raw";
 import header1 from "../generated/dam-style-1-header.html?raw";
 import post1 from "../generated/dam-style-1-post.html?raw";
@@ -18,7 +19,7 @@ import scripts3 from "../generated/dam-style-3-scripts.json";
 import { KidtyDocument } from "../components/kidty/KidtyDocument.jsx";
 import { productService } from "../services/productService.js";
 import { request } from "../services/api.js";
-import { formatPrice } from "../components/ProductCard.jsx";
+import ProductCard, { formatPrice } from "../components/ProductCard.jsx";
 
 const BUNDLES = {
   1: {
@@ -59,7 +60,9 @@ export default function DamFm45Page() {
 
   const isFm45 = !slug || slug === "dam-hoa-cong-chua-fm-45";
   const [product, setProduct] = useState(null);
-  const [loading, setLoading] = useState(!isFm45);
+  const [loading, setLoading] = useState(true); // Always start loading to fetch product details (even for FM-45, so related products load dynamically)
+  const [allProducts, setAllProducts] = useState([]);
+  const [relatedHost, setRelatedHost] = useState(null);
 
   const variant = useMemo(
     () => resolveVariant(searchParams),
@@ -67,11 +70,28 @@ export default function DamFm45Page() {
   );
   const b = BUNDLES[variant];
 
+  // Fetch all products from API for related products listing, fallback to local products list
   useEffect(() => {
-    if (isFm45) {
-      return;
+    async function loadAllProducts() {
+      try {
+        const data = await request("/products");
+        const apiProducts = Array.isArray(data)
+          ? data
+          : data.data || data.products || [];
+        if (apiProducts.length > 0) {
+          setAllProducts(apiProducts);
+        } else {
+          setAllProducts(productService.getProducts());
+        }
+      } catch (err) {
+        console.warn("Fetch all products for related section failed, using local storage:", err);
+        setAllProducts(productService.getProducts());
+      }
     }
+    loadAllProducts();
+  }, []);
 
+  useEffect(() => {
     const normalizeImg = (img) => {
       if (!img) return "/Sản Phẩm – Kidty Shop_files/pro-12_master.jpg";
       if (img.startsWith("http") || img.startsWith("https") || img.startsWith("/")) return img;
@@ -79,10 +99,11 @@ export default function DamFm45Page() {
     };
 
     async function fetchProduct() {
+      const currentSlug = slug || "dam-hoa-cong-chua-fm-45";
       try {
         setLoading(true);
         // Try backend API first
-        const data = await request(`/products/slug/${slug}`);
+        const data = await request(`/products/slug/${currentSlug}`);
         if (data && data.name) {
           setProduct({
             ...data,
@@ -92,19 +113,42 @@ export default function DamFm45Page() {
           });
         } else {
           // Fallback to local storage
-          const local = productService.getProducts().find(p => p.slug === slug || p.id === slug);
+          const local = productService.getProducts().find(p => p.slug === currentSlug || p.id === currentSlug);
           setProduct(local ? { ...local, image: normalizeImg(local.image) } : null);
         }
       } catch (err) {
         console.warn("Fetch product by slug failed, using local storage:", err);
-        const local = productService.getProducts().find(p => p.slug === slug || p.id === slug);
+        const local = productService.getProducts().find(p => p.slug === currentSlug || p.id === currentSlug);
         setProduct(local ? { ...local, image: normalizeImg(local.image) } : null);
       } finally {
         setLoading(false);
       }
     }
     fetchProduct();
-  }, [slug, isFm45]);
+  }, [slug]);
+
+  const relatedProducts = useMemo(() => {
+    if (!product) return [];
+    const all = allProducts.length > 0 ? allProducts : productService.getProducts();
+    // Filter out current product
+    const others = all.filter(p => p.id !== product.id && p.slug !== product.slug && p.id !== slug && p.slug !== slug);
+    // Find products in same category
+    const sameCat = others.filter(p => (p.category || p.category_name) === (product.category || product.category_name));
+    // Find products in different category
+    const diffCat = others.filter(p => (p.category || p.category_name) !== (product.category || product.category_name));
+    // Combine, prioritizing same category, and limit to 3 (which fits exactly 1 row in desktop Bootstrap col-md-4)
+    return [...sameCat, ...diffCat].slice(0, 3);
+  }, [product, allProducts, slug]);
+
+  useLayoutEffect(() => {
+    const container = document.querySelector(".list-productRelated .content-product-list.row");
+    if (container) {
+      container.innerHTML = ""; // Clear static HTML related cards
+      setRelatedHost(container);
+    } else {
+      setRelatedHost(null);
+    }
+  }, [product, loading, variant]);
 
   // 1. Rendering for loading state of custom products
   if (loading && !isFm45) {
@@ -221,6 +265,14 @@ export default function DamFm45Page() {
       scripts={b.scripts}
     >
       <main className="mainContent-theme " dangerouslySetInnerHTML={{ __html: mainHtml }} />
+      {relatedHost && createPortal(
+        relatedProducts.map((relatedProduct) => (
+          <div className="col-md-4 col-sm-6 col-xs-6 pro-loop" key={relatedProduct.id || relatedProduct.slug}>
+            <ProductCard product={relatedProduct} />
+          </div>
+        )),
+        relatedHost
+      )}
     </KidtyDocument>
   );
 }
