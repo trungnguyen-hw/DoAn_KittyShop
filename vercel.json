@@ -1,8 +1,7 @@
 {
-  "cleanUrls": true,
   "rewrites": [
     {
-      "source": "/((?!api/|assets/|static/|_next/|_vercel/|favicon.png|.*\\..*).*)$",
+      "source": "/(.*)",
       "destination": "/index.html"
     }
   ]
