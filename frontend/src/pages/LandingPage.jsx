@@ -16,12 +16,18 @@ const normalizeProduct = (product) => {
   if (rawImage && !rawImage.startsWith("http") && !rawImage.startsWith("https") && !rawImage.startsWith("/")) {
     rawImage = "/" + rawImage;
   }
+  
+  let oldPrice = Number(product.oldPrice || product.old_price) || 0;
+  if (product.id === "dam-hoa-cong-chua-fm-45" && oldPrice === 0) {
+    oldPrice = 550000;
+  }
+
   return {
     ...product,
     id: product.id || "ao-vest-be-trai-fm-v5",
     title: product.title || product.name || "Sản phẩm Kidty",
     price: Number(product.price) || 0,
-    oldPrice: Number(product.oldPrice || product.old_price) || 0,
+    oldPrice: oldPrice,
     image: rawImage,
   };
 };

@@ -58,7 +58,7 @@ INSERT IGNORE INTO products (id, name, slug, price, old_price, image, category_i
 (6, 'Body tam giác tay ngắn mát mẻ', 'body-tam-giac-tay-ngan', 150000, NULL, '/Sản Phẩm – Kidty Shop_files/pro-7_master.jpg', 3, 60, 'active'),
 (7, 'Đầm công chúa cho bé gái M003', 'dam-cong-chua-cho-be-gai-m003', 320000, NULL, '/Sản Phẩm – Kidty Shop_files/pro-21_grande.jpg', 1, 12, 'active'),
 (8, 'Đầm công chúa bé gái xinh xắn', 'dam-cong-chua-cho-be-gai', 299000, NULL, '/Sản Phẩm – Kidty Shop_files/pro-13_53ad16c019174224ac3b64fc0bf06691_grande.jpg', 1, 15, 'active'),
-(9, 'Đầm Hoa Công Chúa FM-45', 'dam-hoa-cong-chua-fm-45', 389000, NULL, '/Đầm Hoa Công Chúa FM-45 – Kidty Shop - KIểu hiển thị 1_files/pro-16_master.jpg', 1, 8, 'active'),
+(9, 'Đầm Hoa Công Chúa FM-45', 'dam-hoa-cong-chua-fm-45', 389000, 550000, '/Đầm Hoa Công Chúa FM-45 – Kidty Shop - KIểu hiển thị 1_files/pro-16_master.jpg', 1, 8, 'active'),
 (10, 'Đồ vest lịch lãm cho bé trai', 'do-vest-cho-be-trai', 520000, NULL, '/Sản Phẩm – Kidty Shop_files/pro-6_master.jpg', 2, 10, 'active'),
 (11, 'Set áo rời quần DM A2', 'set-ao-roi-quan-dm-a2', 270000, NULL, '/Sản Phẩm – Kidty Shop_files/pro-9_master.jpg', 4, 35, 'active'),
 (12, 'Set áo rời quần FM F0045', 'set-ao-roi-quan-fm-f0045', 285000, NULL, '/Sản Phẩm – Kidty Shop_files/pro-8_0d32e65e43ea4abeaf91e51b93043965_grande.jpg', 4, 22, 'active');

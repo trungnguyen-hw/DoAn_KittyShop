@@ -78,6 +78,7 @@ const DEFAULT_PRODUCTS = [
     id: "dam-hoa-cong-chua-fm-45",
     title: "Đầm Hoa Công Chúa FM-45",
     price: 389000,
+    oldPrice: 550000,
     image: "/Đầm Hoa Công Chúa FM-45 – Kidty Shop - KIểu hiển thị 1_files/pro-16_master.jpg",
     description: "Đầm Hoa Công Chúa FM-45 với thiết kế tinh xảo, họa tiết hoa nhí sang trọng và thắt nơ lưng cực kỳ điệu đà.",
     category: "Bé Gái",
