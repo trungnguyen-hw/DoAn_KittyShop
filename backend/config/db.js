@@ -9,6 +9,14 @@ const localDatabaseHosts = new Set(["localhost", "127.0.0.1", "::1"]);
 const databaseCa = process.env.DB_CA_CERT?.replace(/\\n/g, "\n").trim();
 let databaseUrlForMysql2 = databaseUrl;
 
+const usesLocalDatabase = !databaseUrl
+  ? localDatabaseHosts.has(databaseHost)
+  : localDatabaseHosts.has(new URL(databaseUrl).hostname);
+
+if (process.env.NODE_ENV === "production" && usesLocalDatabase) {
+  throw new Error("Production requires an online MySQL database");
+}
+
 if (databaseUrl) {
   try {
     const parsedDatabaseUrl = new URL(databaseUrl);
@@ -19,16 +27,17 @@ if (databaseUrl) {
   }
 }
 
-if (process.env.NODE_ENV === "production") {
-  let usesLocalDatabase = !databaseUrl && localDatabaseHosts.has(databaseHost);
-
-  if (databaseUrl) {
-    usesLocalDatabase = localDatabaseHosts.has(new URL(databaseUrl).hostname);
-  }
-
-  if (usesLocalDatabase) {
-    throw new Error("Production requires an online MySQL database");
-  }
+// Build SSL configuration
+let sslConfig = null;
+if (databaseCa) {
+  sslConfig = {
+    ca: databaseCa,
+    rejectUnauthorized: true
+  };
+} else if (process.env.DB_SSL === "true" || (process.env.NODE_ENV === "production" && !usesLocalDatabase)) {
+  sslConfig = {
+    rejectUnauthorized: process.env.DB_SSL_REJECT_UNAUTHORIZED !== "false"
+  };
 }
 
 const connectionOptions = {
@@ -41,18 +50,14 @@ const connectionOptions = {
   connectionLimit: 10,
   queueLimit: 0,
   enableKeepAlive: true,
-  connectTimeout: 10000
+  connectTimeout: 10000,
+  ...(sslConfig && { ssl: sslConfig })
 };
 
 const pool = databaseUrl
   ? mysql.createPool({
       uri: databaseUrlForMysql2,
-      ...(databaseCa && {
-        ssl: {
-          ca: databaseCa,
-          rejectUnauthorized: true
-        }
-      }),
+      ...(sslConfig && { ssl: sslConfig }),
       waitForConnections: true,
       connectionLimit: 5,
       queueLimit: 0,
@@ -62,8 +67,23 @@ const pool = databaseUrl
   : mysql.createPool(connectionOptions);
 
 export async function testConnection() {
-  const connection = await pool.getConnection();
-  connection.release();
+  try {
+    const connection = await pool.getConnection();
+    connection.release();
+    console.log("Database connection test succeeded.");
+    return true;
+  } catch (err) {
+    console.error("Database connection test failed details (excluding password):", {
+      host: databaseHost,
+      port: process.env.DB_PORT || 3306,
+      user: process.env.DB_USER || "root",
+      database: process.env.DB_NAME || "kidty_shop",
+      hasDatabaseUrl: !!databaseUrl,
+      hasSslConfig: !!sslConfig,
+      errorMessage: err.message
+    });
+    throw err;
+  }
 }
 
 export default pool;

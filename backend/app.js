@@ -30,7 +30,10 @@ app.use(cors({
     }
 
     return callback(new Error("CORS block: Origin not allowed"));
-  }
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
 app.use(express.json({ limit: "1mb" }));

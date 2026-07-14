@@ -9,18 +9,37 @@ export const loginAdmin = async (req, res) => {
   const { username, password } = req.body;
 
   if (!username || !password) {
-    return res.status(400).json({ message: "Vui lòng điền đầy đủ thông tin" });
+    return res.status(400).json({ success: false, message: "Vui lòng điền đầy đủ thông tin" });
   }
 
   const cleanUser = username.trim().toLowerCase();
   const cleanPass = password.trim();
 
   try {
-    const [rows] = await pool.query("SELECT * FROM admins WHERE username = ? AND role = 'admin'", [cleanUser]);
+    // Check if we need to auto-seed from environment variables
+    if (process.env.ADMIN_USERNAME && process.env.ADMIN_PASSWORD) {
+      try {
+        const [allAdmins] = await pool.query("SELECT id FROM admins LIMIT 1");
+        if (allAdmins.length === 0) {
+          console.log("No admins found in database. Auto-seeding admin user from env...");
+          const salt = await bcrypt.genSalt(10);
+          const hashedPassword = await bcrypt.hash(process.env.ADMIN_PASSWORD.trim(), salt);
+          await pool.query(
+            "INSERT INTO admins (username, password, role) VALUES (?, ?, ?)",
+            [process.env.ADMIN_USERNAME.trim().toLowerCase(), hashedPassword, "admin"]
+          );
+          console.log(`Admin user '${process.env.ADMIN_USERNAME}' auto-seeded successfully.`);
+        }
+      } catch (dbInitErr) {
+        console.error("Failed to check or auto-seed admins table:", dbInitErr.message);
+      }
+    }
+
+    const [rows] = await pool.query("SELECT * FROM admins WHERE username = ?", [cleanUser]);
     if (rows.length === 0) {
       return res.status(401).json({
         success: false,
-        message: "Sai tài khoản hoặc mật khẩu"
+        message: "Tài khoản hoặc mật khẩu không chính xác"
       });
     }
 
@@ -30,13 +49,23 @@ export const loginAdmin = async (req, res) => {
     if (!isMatch) {
       return res.status(401).json({
         success: false,
-        message: "Sai tài khoản hoặc mật khẩu"
+        message: "Tài khoản hoặc mật khẩu không chính xác"
+      });
+    }
+
+    if (admin.role !== "admin") {
+      return res.status(403).json({
+        success: false,
+        message: "Tài khoản không có quyền truy cập trang quản trị"
       });
     }
 
     if (!process.env.JWT_SECRET) {
-      console.error("JWT_SECRET is not configured");
-      return res.status(500).json({ success: false, message: "Máy chủ chưa được cấu hình xác thực" });
+      console.error("JWT_SECRET configuration is missing on the server.");
+      return res.status(500).json({
+        success: false,
+        message: "Lỗi máy chủ nội bộ (thiếu cấu hình xác thực)"
+      });
     }
 
     const token = jwt.sign(
@@ -53,11 +82,19 @@ export const loginAdmin = async (req, res) => {
         id: admin.id,
         username: admin.username,
         role: admin.role
+      },
+      user: {
+        id: admin.id,
+        username: admin.username,
+        role: admin.role
       }
     });
   } catch (error) {
     console.error("Auth Controller Error:", error.message);
-    return res.status(500).json({ message: "Lỗi xử lý đăng nhập tại Server" });
+    return res.status(500).json({
+      success: false,
+      message: "Lỗi máy chủ nội bộ. Vui lòng thử lại sau hoặc liên hệ quản trị viên."
+    });
   }
 };
 

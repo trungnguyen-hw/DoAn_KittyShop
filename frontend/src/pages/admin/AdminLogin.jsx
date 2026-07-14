@@ -65,7 +65,11 @@ export default function AdminLogin() {
       console.error("API login error:", err);
       let errMsg = "Lỗi xử lý đăng nhập tại Server";
       if (err.status === 401) {
-        errMsg = "Sai tài khoản hoặc mật khẩu";
+        errMsg = "Tài khoản hoặc mật khẩu không chính xác";
+      } else if (err.status === 403) {
+        errMsg = "Tài khoản không có quyền truy cập trang quản trị";
+      } else if (err.status === 500) {
+        errMsg = "Máy chủ đang gặp lỗi, vui lòng thử lại";
       } else {
         errMsg = err.message || errMsg;
       }
